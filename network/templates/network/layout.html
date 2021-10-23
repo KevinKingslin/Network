@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Network</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+    <!-- CSS Stylesheets -->
+    <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@1,300&display=swap" rel="stylesheet">
+
+    <script src="{% static 'network/mainpage.js' %}"></script>
+    
+  </head>
+  <body>
+    <div style="text-align:left">
+      <div>
+        <nav class="navbar-light fixed-top bg-light" style="text-align:center;width:100vw;z-index:0">
+            <a href="{% url 'index' %}" style="text-decoration:none;color:black">
+              <span style="font-family: 'IBM Plex Sans', sans-serif;font-size:xx-large">N E T W O R K</span>
+            </a>
+        </nav>
+      </div>
+      
+      <div class="body" style="background-color: #fafafa; width: 100%; padding-top: 70px; padding-left: 30px; padding-right: 30px;">
+          {% block body %}
+          {% endblock %}
+      </div>
+    </div>
+  </body>
+</html>

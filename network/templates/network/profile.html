@@ -1,0 +1,85 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <div style="margin-right: auto; margin-left: auto; text-align: center;">
+        <div>
+            {% if user.profilePicture %}
+                <img src='{{ user.profilePicture.url }}' class="img-responsive" style="width: 100px; margin-left: auto; display: block; margin-right: auto; border-radius: 100%" />
+            {% else %}
+                <img src='/media/profilePictures/default.jpg' class="img-responsive" style="width: 100px; margin-left: auto; display: block; margin-right: auto; border-radius: 100%" />
+            {% endif %}
+        </div>
+
+        <div style="text-align: center; font-size: 36px;">{{ user.username }}</div>
+
+        {% if request.user.id != user.id %}
+            {% if following == False %}
+                <button onclick="toggleFollow(this, '{{ user.id }}')" class="btn btn-primary" data-follow="false">Follow</button>
+            {% elif following == True %}
+                <button onclick="toggleFollow(this, '{{ user.id }}')" class="btn btn-primary" data-follow="true">Unfollow</button>
+            {% endif %}
+        {% endif %}
+
+        <div style="text-align: center;">
+            <span style="margin-right: 40px; font-size: 18px;">Followers: <span id="followers">{{ followerCount }}</span></span>
+            <span style="font-size: 18px;">Following: <span id="following">{{ followingCount }}<span></span>
+        </div>
+
+    </div>
+    <hr>
+    {% for post in posts %}
+        <div data-name={{ post.id }} id="postContainer" style="border: solid 1px; border-color: grey;width: 40vw; margin-left: auto; margin-right: auto; margin-top:vh; margin-bottom: 2vh; border-radius: 1%; display: flexbox;">
+            <div style="width: 100%; padding: 1vh; border-bottom:  groove 2px; ">
+                <div style="display: inline;">
+                    {% if post.creator.profilePicture %}
+                        <img src="{{ user.profilePicture.url }}" class="img-responsive" style="border-radius: 50%; width: 35px; height: 35px;" \>
+                    {% else %}
+                        <img src='/media/profilePictures/default.jpg' class="img-responsive" style="border-radius: 50%; width: 35px; height: 35px;" />
+                    {% endif %}
+                </div>
+                <div style="font-size: 20px; display: inline;"><b><a href="{% url 'profile' post.creator.id %}">{{ post.creator }}</a></b></div>
+            </div>
+        
+        {% if post.image %}
+            <div id="postImage" style="width: 100%; height: 100%;">
+                <img src="{{ post.image.url }}" class="img-responsive" style="display: inline-block;width: 100%; height: 100%;" />
+            </div>
+        {% endif %}
+
+        {% if post.id in likes %}
+            <!-- Full Heart -->
+            <button id={{ post.id }} onclick=toggleLike(this) class="likeButton" data-like="true" style="padding: 0;border: none;background: none; padding-left: 10px; ">
+                <svg style="color: red; pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/></svg>
+            </button>
+            <span id=likeCount-{{ post.id }}>{{ post.likes }}</span>
+        {% else %}
+            <!-- Hollow Heart -->
+            <button id={{ post.id }} onClick="toggleLike(this)" class="likeButton" data-like="false" style="padding: 0;border: none;background: none; padding-left: 10px;">
+                <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16"><path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/></svg>
+            </button>
+            <span id=likeCount-{{ post.id }}>{{ post.likes }}</span>
+        {% endif %}
+
+            <div id="postDescription-{{post.id}}" style="padding-left: 10px; padding-right: 10px;font-size: 18px;">
+                {{ post.description }} 
+            </div>
+        {% if request.user == post.creator %}
+            <div id='editContainer-{{ post.id }}' onclick="openEdit('{{ post.id }}')" style="padding-left: 10px">
+                <a id="editLabel">Edit
+                <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></a>
+                <form onsubmit="editPost(this, '{{ post.id }}')" id="editForm">
+                    <textarea id="editArea" style="display: none; height: 50px;width: 90%;">{{ post.description }}</textarea>
+                    <button id='editSave' style="display: none;" class="btn btn-primary" type="submit">Save and Close</button>
+                </form>
+            </div>
+        {% endif %}
+                
+            <div style="padding-left: 10px;">{{ post.timestamp }}</div>
+            <div id="comment" style="padding-left: 10px;"><span>Comments()</span></div>
+            {% for element in post.comments.all %}
+                <span><b>{{ element.user }}</b></span>
+                <span>{{ element.description }}</span>
+            {% endfor %}
+        </div>
+    {% endfor%}
+{% endblock %}

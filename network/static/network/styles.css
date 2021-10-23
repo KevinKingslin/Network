@@ -1,0 +1,79 @@
+#heading {
+    text-decoration: none;
+}
+
+.body {
+    width: 98%;
+    margin: auto;
+}
+
+button {
+    outline: none;
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+#sidebar {
+    width: 210px;
+    position: fixed;
+    height: 100vh;
+    z-index:100;
+    background:#0a66c2;
+    color: #fff;
+}
+
+.rating
+    {
+        width:60px;
+        height:20px;
+        display:inline;
+    }
+.cover{
+    width:150px;
+    height:200px;
+}
+
+#username{
+    padding:8px 16px;
+}
+
+#editArea{
+    display:none; 
+    height: 50px;
+    width: 95%;
+}
+
+li{
+    font-size:16px;
+    color:#FF5733;
+}
+td, th
+{
+    max-width:413px;
+    text-align: left;
+}
+
+main .form-control
+{
+    display: inline-block;
+    width: auto;
+}
+
+main
+{
+    overflow-x: auto;
+    text-align: center;
+}
+
+main img
+{
+    max-width: 100%;
+}
+
+#price:hover, #heading:hover
+{
+    background:none;
+}
