@@ -1,6 +1,15 @@
 .body {
-    width: 98%;
     margin: auto;
+    background-color: #fafafa; 
+    width: 100%; 
+    padding-top: 70px; 
+    padding-left: 30px; 
+    padding-right: 30px;
+}
+
+#logo {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size:xx-large;
 }
 
 .newPostFormContainer {
