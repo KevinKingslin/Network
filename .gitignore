@@ -1,1 +1,4 @@
 media
+db.sqlite3
+*.pyc
+network/migrations
