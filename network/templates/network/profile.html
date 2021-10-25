@@ -1,16 +1,16 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    <div style="margin-right: auto; margin-left: auto; text-align: center;">
+    <div class="profileHeader">
         <div>
             {% if user.profilePicture %}
-                <img src='{{ user.profilePicture.url }}' class="img-responsive" style="width: 100px; margin-left: auto; display: block; margin-right: auto; border-radius: 100%" />
+                <img src="{{ post.creator.profilePicture.url }}" class="img-responsive profilePicture"\>
             {% else %}
-                <img src='/media/profilePictures/default.jpg' class="img-responsive" style="width: 100px; margin-left: auto; display: block; margin-right: auto; border-radius: 100%" />
+                <img src='/media/profilePictures/default.jpg' class="img-responsive profilePicture"/>
             {% endif %}
         </div>
 
-        <div style="text-align: center; font-size: 36px;">{{ user.username }}</div>
+        <div id="profileUsername">{{ user.username }}</div>
 
         {% if request.user.id != user.id %}
             {% if following == False %}
@@ -21,46 +21,46 @@
         {% endif %}
 
         <div style="text-align: center;">
-            <span style="margin-right: 40px; font-size: 18px;">Followers: <span id="followers">{{ followerCount }}</span></span>
-            <span style="font-size: 18px;">Following: <span id="following">{{ followingCount }}<span></span>
+            <span class="profileFollowers">Followers: <span id="followers">{{ followerCount }}</span></span>
+            <span class="profileFollowing">Following: <span id="following">{{ followingCount }}<span></span>
         </div>
 
     </div>
     <hr>
     {% for post in posts %}
-        <div data-name={{ post.id }} id="postContainer" style="border: solid 1px; border-color: grey;width: 40vw; margin-left: auto; margin-right: auto; margin-top:vh; margin-bottom: 2vh; border-radius: 1%; display: flexbox;">
+        <div data-name={{ post.id }} id="postContainer" class="postContainer">
             <div style="width: 100%; padding: 1vh; border-bottom:  groove 2px; ">
                 <div style="display: inline;">
                     {% if post.creator.profilePicture %}
-                        <img src="{{ user.profilePicture.url }}" class="img-responsive" style="border-radius: 50%; width: 35px; height: 35px;" \>
+                        <img src="{{ post.creator.profilePicture.url }}" class="img-responsive profilePicture"\>
                     {% else %}
-                        <img src='/media/profilePictures/default.jpg' class="img-responsive" style="border-radius: 50%; width: 35px; height: 35px;" />
+                        <img src='/media/profilePictures/default.jpg' class="img-responsive profilePicture"/>
                     {% endif %}
                 </div>
                 <div style="font-size: 20px; display: inline;"><b><a href="{% url 'profile' post.creator.id %}">{{ post.creator }}</a></b></div>
             </div>
         
         {% if post.image %}
-            <div id="postImage" style="width: 100%; height: 100%;">
-                <img src="{{ post.image.url }}" class="img-responsive" style="display: inline-block;width: 100%; height: 100%;" />
+            <div id="postImageContainer">
+                <img src="{{ post.image.url }}" class="img-responsive postImage" />
             </div>
         {% endif %}
 
         {% if post.id in likes %}
             <!-- Full Heart -->
-            <button id={{ post.id }} onclick=toggleLike(this) class="likeButton" data-like="true" style="padding: 0;border: none;background: none; padding-left: 10px; ">
-                <img src="static/network/svg/heart-fill.svg">
+            <button id={{ post.id }} onclick=toggleLike(this) class="likeButton" data-like="true">
+                <img src="/static/network/svg/heart-fill.svg">
             </button>
-            <span id=likeCount-{{ post.id }}>{{ post.likes }}</span>
+            <span id=likeCount-{{ post.id }}>{{ post.likes }}</span> likes
         {% else %}
             <!-- Hollow Heart -->
-            <button id={{ post.id }} onClick="toggleLike(this)" class="likeButton" data-like="false" style="padding: 0;border: none;background: none; padding-left: 10px;">
-                <img src="=static/network/svg/heart.svg">
+            <button id={{ post.id }} onClick="toggleLike(this)" class="likeButton" data-like="false">
+                <img src="/static/network/svg/heart.svg">
             </button>
-            <span id=likeCount-{{ post.id }}>{{ post.likes }}</span>
+            <span id=likeCount-{{ post.id }}>{{ post.likes }}</span> likes
         {% endif %}
 
-            <div id="postDescription-{{post.id}}" style="padding-left: 10px; padding-right: 10px;font-size: 18px;">
+            <div id="postDescription-{{post.id}}" class="postDescription">
                 {{ post.description }} 
             </div>
         {% if request.user == post.creator %}
@@ -69,7 +69,7 @@
                     <img src="static/network/svg/pencil-square.svg">
                 </a>
                 <form onsubmit="editPost(this, '{{ post.id }}')" id="editForm">
-                    <textarea id="editArea" style="display: none; height: 50px;width: 90%;">{{ post.description }}</textarea>
+                    <textarea id="editArea" style="display: none;">{{ post.description }}</textarea>
                     <button id='editSave' style="display: none;" class="btn btn-primary" type="submit">Save and Close</button>
                 </form>
             </div>
