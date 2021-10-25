@@ -43,28 +43,19 @@
         <ul class="nav nav-pills flex-column mb-auto">
             <li>
                 <a href="{% url 'profile' request.user.id %}" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16" style="color: black;">
-                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                    </svg>
+                    <img src="static/network/svg/person-circle.svg">
                     {{ request.user.username }}
                 </a>
             </li>
             <li>
                 <a href="{% url 'index' %}" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-display" viewBox="0 0 16 16">
-                        <path d="M0 4s0-2 2-2h12s2 0 2 2v6s0 2-2 2h-4c0 .667.083 1.167.25 1.5H11a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1h.75c.167-.333.25-.833.25-1.5H2s-2 0-2-2V4zm1.398-.855a.758.758 0 0 0-.254.302A1.46 1.46 0 0 0 1 4.01V10c0 .325.078.502.145.602.07.105.17.188.302.254a1.464 1.464 0 0 0 .538.143L2.01 11H14c.325 0 .502-.078.602-.145a.758.758 0 0 0 .254-.302 1.464 1.464 0 0 0 .143-.538L15 9.99V4c0-.325-.078-.502-.145-.602a.757.757 0 0 0-.302-.254A1.46 1.46 0 0 0 13.99 3H2c-.325 0-.502.078-.602.145z"/>
-                      </svg>
+                    <img src="static/network/svg/display.svg">
                     All Posts
                 </a>
             </li>
             <li>
                 <a href="{% url 'following' 'following'%}" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16" style="color: black;">
-                        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                        <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
-                        <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-                    </svg>
+                    <img src="static/network/svg/people-fill.svg">
                     Following
                 </a>
             </li>
@@ -114,13 +105,13 @@
                     {% if post.id in likes %}
                         <!-- Full Heart -->
                         <button id={{ post.id }} onclick=toggleLike(this) class="likeButton" data-like="true" style="padding: 0;border: none;background: none; padding-left: 10px; ">
-                            <svg style="color: red; pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/></svg>
+                            <img src="static/network/svg/heart-fill.svg">
                         </button>
                         <span id=likeCount-{{ post.id }}>{{ post.likes }}</span> likes
                     {% else %}
                         <!-- Hollow Heart -->
                         <button id={{ post.id }} onClick="toggleLike(this)" class="likeButton" data-like="false" style="padding: 0;border: none;background: none; padding-left: 10px;">
-                            <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16"><path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/></svg>
+                            <img src="static/network/svg/heart.svg">
                         </button>
                         <span id=likeCount-{{ post.id }}>{{ post.likes }}</span> likes
                     {% endif %}
@@ -131,7 +122,8 @@
                     {% if request.user == post.creator %}
                         <div id='editContainer-{{ post.id }}' onclick="openEdit('{{ post.id }}')" style="padding-left: 10px">
                             <a id="editLabel">Edit
-                            <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></a>
+                                <img src="static/network/svg/pencil-square.svg">
+                            </a>
                             <form onsubmit="editPost(this, '{{ post.id }}')" id="editForm">
                                 <textarea id="editArea" style="display: none; height: 50px;width: 90%;">{{ post.description }}</textarea>
                                 <button id='editSave' style="display: none;" class="btn btn-primary" type="submit">Save and Close</button>
