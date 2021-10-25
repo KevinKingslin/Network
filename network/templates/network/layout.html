@@ -25,12 +25,12 @@
       <div>
         <nav class="navbar-light fixed-top bg-light" style="text-align:center;width:100vw;z-index:0">
             <a href="{% url 'index' %}" style="text-decoration:none;color:black">
-              <span style="font-family: 'IBM Plex Sans', sans-serif;font-size:xx-large">N E T W O R K</span>
+              <span id="logo">N E T W O R K</span>
             </a>
         </nav>
       </div>
       
-      <div class="body" style="background-color: #fafafa; width: 100%; padding-top: 70px; padding-left: 30px; padding-right: 30px;">
+      <div class="body">
           {% block body %}
           {% endblock %}
       </div>
