@@ -6,7 +6,7 @@ function toggleLike(likeButton){
     if (likeButton.dataset.like == "true"){
         likeButton.dataset.like = false
         likeCount = document.querySelector(`#likeCount-${likeButton.id}`)
-        fetch(`posts/toggleLike/${likeButton.id}`, {
+        fetch(`/posts/toggleLike/${likeButton.id}`, {
             "method": "PUT",
             "body": JSON.stringify({
                 "liked": likeButton.dataset.like
@@ -18,7 +18,7 @@ function toggleLike(likeButton){
     else if(likeButton.dataset.like == 'false'){
         likeButton.dataset.like = true
         likeCount = document.querySelector(`#likeCount-${likeButton.id}`)
-        fetch(`posts/toggleLike/${likeButton.id}`, {
+        fetch(`/posts/toggleLike/${likeButton.id}`, {
             "method": "PUT",
             "body": JSON.stringify({
                 "liked": likeButton.dataset.like

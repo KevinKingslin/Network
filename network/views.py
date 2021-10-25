@@ -107,6 +107,7 @@ def toggleLike(request, post_id):
 
 def profile(request, user_id):
     if request.method == "GET":
+        likeList = []
         fromUser = User.objects.get(id=request.user.id)
         toUser = User.objects.get(id=user_id)
         posts = Post.objects.filter(creator = toUser).order_by('-timestamp')
@@ -116,9 +117,13 @@ def profile(request, user_id):
         if toUser in fromUser.followings.all():
             following = True
 
+        for result in fromUser.likedBy.all():
+            likeList.append(result.id)
+
         return render(request, "network/profile.html", {
             "user": toUser,
             "posts": posts,
+            "likes": likeList,
             "following": following,
             "followerCount": followerCount,
             "followingCount": followingCount
