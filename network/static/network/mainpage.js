@@ -39,13 +39,13 @@ function toggleFollow(followButton, user_id){
     follow = followButton.dataset.follow
     followers = document.querySelector('#followers')
     followButton.innerHTML = (follow == 'true') ? "Follow" : "Unfollow"   
+    followButton.dataset.follow = !follow
     if(follow == 'true'){
         followers.innerHTML = (`${parseInt(followers.innerHTML)-1}`)
     }
     else if(follow == 'false'){
         followers.innerHTML = (`${parseInt(followers.innerHTML)+1}`)
     }
-    followButton.dataset.follow = (follow == 'true') ? "false" : "true"
 }
 
 //Variable which is used to check if an edit area is currently open

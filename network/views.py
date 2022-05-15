@@ -1,3 +1,4 @@
+from curses.ascii import US
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
@@ -7,14 +8,16 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators import csrf
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django import forms
 from django.core.paginator import Paginator
 from itertools import chain
 import json
-
-from .models import User, Post
-
+import networkx as nx
+import matplotlib.pyplot as plt
+from .models import User, Post, UserFollowing
+from .serializers import UserSerializer
 
 class NewPostForm(forms.Form):
     image = forms.ImageField(required=False, widget=forms.FileInput(attrs={'id': 'newPostFormImage'}))
@@ -31,10 +34,10 @@ def index(request, following=None):
 
     if following == None:
         posts = list(Post.objects.all().order_by('-timestamp'))
-    elif following == "following":
-        posts = [Post.objects.filter(creator=users) for users in user.followings.all()]
-        posts = list(chain(*posts))
-        posts.sort(key=lambda x: x.timestamp, reverse=True)
+    # elif following == "following":
+    #     posts = [Post.objects.filter(creator=users) for users in user.followings.all()]
+    #     posts = list(chain(*posts))
+    #     posts.sort(key=lambda x: x.timestamp, reverse=True)
 
     for result in user.likedBy.all():
         likeList.append(result.id)
@@ -104,6 +107,11 @@ def toggleLike(request, post_id):
         else:
             return HttpResponse(status=402)
 
+def mutualFollowers(fromUserFollowings, toUserFollowers):
+    print(fromUserFollowings)
+    print(toUserFollowers)
+    pass
+
 
 def profile(request, user_id):
     if request.method == "GET":
@@ -111,11 +119,15 @@ def profile(request, user_id):
         fromUser = User.objects.get(id=request.user.id)
         toUser = User.objects.get(id=user_id)
         posts = Post.objects.filter(creator = toUser).order_by('-timestamp')
-        followerCount = toUser.followers.count()
-        followingCount = toUser.followings.count()
-        following = False
-        if toUser in fromUser.followings.all():
+        followerCount = toUser.followerCount
+
+        followingCount = toUser.followingCount
+
+        try:
+            UserFollowing.objects.get(following=fromUser, follower=toUser)
             following = True
+        except ObjectDoesNotExist: 
+            following = False
 
         for result in fromUser.likedBy.all():
             likeList.append(result.id)
@@ -142,12 +154,19 @@ def toggleFollow(request, user_id):
             fromUser = User.objects.get(id=request.user.id)
             toUser = User.objects.get(id=user_id)
             if data.get('follow') == "false":
-                fromUser.followings.add(toUser)
-                toUser.followers.add(fromUser)
+                UserFollowing.objects.create(following=fromUser, follower=toUser)
+                fromUser.followingCount += 1
+                toUser.followerCount += 1
+                fromUser.save()
+                toUser.save()
                 return HttpResponse(status=200)
             elif data.get('follow') == "true":
-                fromUser.followings.remove(toUser)
-                toUser.followers.remove(fromUser)
+                record = UserFollowing.objects.get(following=fromUser, follower=toUser)
+                record.delete()
+                fromUser.followingCount -= 1
+                toUser.followerCount -= 1
+                fromUser.save()
+                toUser.save()
                 return HttpResponse(status=200)
 
 

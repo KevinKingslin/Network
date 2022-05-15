@@ -3,9 +3,20 @@ from django.db import models
 
 class User(AbstractUser):
     profilePicture = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
-    following = models.ForeignKey('self', related_name="followings", on_delete=models.CASCADE, blank=True, null=True)
-    follower = models.ForeignKey('self', related_name="followers", on_delete=models.CASCADE, blank=True, null=True)
+    followerCount = models.IntegerField(default=0)
+    followingCount = models.IntegerField(default=0)
     likedBy = models.ManyToManyField('Post', related_name="likedBy", blank=True)
+
+class UserFollowing(models.Model):
+    following = models.ForeignKey("User", related_name="following", on_delete=models.CASCADE)
+    follower = models.ForeignKey("User", related_name="followers", on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('following', 'follower',)
+
+    def __str__(self):
+        return str(self.follower)
 
 class Post(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="post")
