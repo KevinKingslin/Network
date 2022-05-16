@@ -38,8 +38,8 @@ function toggleFollow(followButton, user_id){
     })
     follow = followButton.dataset.follow
     followers = document.querySelector('#followers')
-    followButton.innerHTML = (follow == 'true') ? "Follow" : "Unfollow"   
-    followButton.dataset.follow = !follow
+    followButton.innerHTML = (follow == 'true') ? "Follow" : "Unfollow"
+    followButton.dataset.follow = (follow == 'true') ? false : true
     if(follow == 'true'){
         followers.innerHTML = (`${parseInt(followers.innerHTML)-1}`)
     }
