@@ -14,8 +14,10 @@
 
         {% if request.user.id != user.id %}
             {% if following == False %}
+                <h5>Mutual Followers: {{ mutualFollowerCount }}</h5>
                 <button onclick="toggleFollow(this, '{{ user.id }}')" class="btn btn-primary" data-follow="false">Follow</button>
             {% elif following == True %}
+                <h5>Mutual Followers: {{ mutualFollowerCount }}</h5>
                 <button onclick="toggleFollow(this, '{{ user.id }}')" class="btn btn-primary" data-follow="true">Unfollow</button>
             {% endif %}
         {% endif %}

@@ -16,7 +16,7 @@ class UserFollowing(models.Model):
         unique_together = ('following', 'follower',)
 
     def __str__(self):
-        return str(self.follower)
+        return str(f"{self.following} is following {self.follower}")
 
 class Post(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="post")

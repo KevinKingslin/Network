@@ -107,12 +107,6 @@ def toggleLike(request, post_id):
         else:
             return HttpResponse(status=402)
 
-def mutualFollowers(fromUserFollowings, toUserFollowers):
-    print(fromUserFollowings)
-    print(toUserFollowers)
-    pass
-
-
 def profile(request, user_id):
     if request.method == "GET":
         likeList = []
@@ -129,6 +123,14 @@ def profile(request, user_id):
         except ObjectDoesNotExist: 
             following = False
 
+        mutualFollowerCount = 0
+        for record in fromUser.following.all():
+            try:
+                UserFollowing.objects.get(following_id=record.follower_id, follower_id=toUser)
+                mutualFollowerCount += 1
+            except ObjectDoesNotExist:
+                pass
+
         for result in fromUser.likedBy.all():
             likeList.append(result.id)
 
@@ -138,7 +140,8 @@ def profile(request, user_id):
             "likes": likeList,
             "following": following,
             "followerCount": followerCount,
-            "followingCount": followingCount
+            "followingCount": followingCount,
+            "mutualFollowerCount": mutualFollowerCount
         })
     else:
         return HttpResponse('404')
