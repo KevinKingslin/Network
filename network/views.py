@@ -1,3 +1,4 @@
+from cProfile import label
 from curses.ascii import US
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -106,6 +107,42 @@ def toggleLike(request, post_id):
         else:
             return HttpResponse(status=402)
 
+def Recommend(fromUser):
+    serializer = UserSerializer()
+    AllEdges = []
+    SecondOrder = []
+    FirstOrderFollowing = serializer.get_following(fromUser)
+
+    # Get first order neighbours
+    for user_id in FirstOrderFollowing:
+        FollowUser = User.objects.get(id=user_id)
+        AllEdges.append((fromUser.id, user_id))
+
+        # Get second order neighbours
+        for seconduser in serializer.get_following(FollowUser):
+            if seconduser not in FirstOrderFollowing and seconduser != fromUser.id:
+                SecondOrder.append(seconduser)
+
+            # Prevent fromUser from being added as edge
+            if seconduser != fromUser.id:
+                AllEdges.append((FollowUser.id, seconduser))
+
+    G = nx.DiGraph()
+    G.add_nodes_from(FirstOrderFollowing)
+    G.add_nodes_from(SecondOrder)
+    G.add_edges_from(AllEdges)
+    nx.draw(G, with_labels=True)
+
+    SecondOrder = list(set(SecondOrder))
+    RecommendList = []
+    for node in SecondOrder:
+        RecommendList.append((node, G.in_degree(node)))
+
+    # Sort recommend list on number of mutual followers
+    RecommendList.sort(key=lambda y: y[1], reverse=True)
+    print(RecommendList)
+    return RecommendList
+
 def profile(request, user_id):
     if request.method == "GET":
         likeList = []
@@ -115,10 +152,6 @@ def profile(request, user_id):
         followerCount = toUser.followerCount
 
         followingCount = toUser.followingCount
-
-        serializer = UserSerializer(fromUser)
-        for record in serializer.get_followers(fromUser):
-            print(record['user_id'])
 
         try:
             UserFollowing.objects.get(user_id=fromUser, following_user_id=toUser)
@@ -160,14 +193,14 @@ def toggleFollow(request, user_id):
             fromUser = User.objects.get(id=request.user.id)
             toUser = User.objects.get(id=user_id)
             if data.get('follow') == "false":
-                UserFollowing.objects.create(following=fromUser, follower=toUser)
+                UserFollowing.objects.create(user_id=fromUser, following_user_id=toUser)
                 fromUser.followingCount += 1
                 toUser.followerCount += 1
                 fromUser.save()
                 toUser.save()
                 return HttpResponse(status=200)
             elif data.get('follow') == "true":
-                record = UserFollowing.objects.get(following=fromUser, follower=toUser)
+                record = UserFollowing.objects.get(user_id=fromUser, following_user_id=toUser)
                 record.delete()
                 fromUser.followingCount -= 1
                 toUser.followerCount -= 1

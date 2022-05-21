@@ -32,7 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def get_following(self, obj):
-        return FollowingSerializer(obj.following.all(), many=True).data
+        return list(obj.following.values_list('following_user_id', flat=True))
 
     def get_followers(self, obj):
-        return FollowersSerializer(obj.followers.all(), many=True).data
+        return list(obj.followers.values_list('user_id', flat=True))
