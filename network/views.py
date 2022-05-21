@@ -16,8 +16,8 @@ from itertools import chain
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
+from network.serializers.serializer import FollowersSerializer, FollowingSerializer, UserSerializer
 from .models import User, Post, UserFollowing
-from .serializers import UserSerializer
 
 class NewPostForm(forms.Form):
     image = forms.ImageField(required=False, widget=forms.FileInput(attrs={'id': 'newPostFormImage'}))
@@ -26,7 +26,6 @@ class NewPostForm(forms.Form):
 @login_required(login_url="login")
 def index(request, following=None):
     likeList = []
-
     try:
         user = User.objects.get(id=request.user.id)
     except:
@@ -117,8 +116,12 @@ def profile(request, user_id):
 
         followingCount = toUser.followingCount
 
+        serializer = UserSerializer(fromUser)
+        for record in serializer.get_followers(fromUser):
+            print(record['user_id'])
+
         try:
-            UserFollowing.objects.get(following=fromUser, follower=toUser)
+            UserFollowing.objects.get(user_id=fromUser, following_user_id=toUser)
             following = True
         except ObjectDoesNotExist: 
             following = False
@@ -126,7 +129,7 @@ def profile(request, user_id):
         mutualFollowerCount = 0
         for record in fromUser.following.all():
             try:
-                UserFollowing.objects.get(following_id=record.follower_id, follower_id=toUser)
+                UserFollowing.objects.get(user_id=record.following_user_id, following_user_id=toUser)
                 mutualFollowerCount += 1
             except ObjectDoesNotExist:
                 pass
