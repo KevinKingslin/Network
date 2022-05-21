@@ -8,15 +8,19 @@ class User(AbstractUser):
     likedBy = models.ManyToManyField('Post', related_name="likedBy", blank=True)
 
 class UserFollowing(models.Model):
-    following = models.ForeignKey("User", related_name="following", on_delete=models.CASCADE)
-    follower = models.ForeignKey("User", related_name="followers", on_delete=models.CASCADE)
+    user_id = models.ForeignKey("User", related_name="following", on_delete=models.CASCADE)
+    following_user_id = models.ForeignKey("User", related_name="followers", on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('following', 'follower',)
+        constraints = [
+            models.UniqueConstraint(fields=['user_id','following_user_id'],  name="unique_followers")
+        ]
+        ordering = ["-created"]
 
+    #testline
     def __str__(self):
-        return str(f"{self.following} is following {self.follower}")
+        return f"{self.user_id} follows {self.following_user_id}"
 
 class Post(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="post")
