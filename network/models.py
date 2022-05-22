@@ -18,9 +18,22 @@ class UserFollowing(models.Model):
         ]
         ordering = ["-created"]
 
-    #testline
     def __str__(self):
         return f"{self.user_id} follows {self.following_user_id}"
+
+class SearchHistory(models.Model):
+    user_id = models.ForeignKey("User", related_name="user", on_delete=models.CASCADE)
+    searched_user = models.ForeignKey("User", related_name="searchhistory", on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user_id','searched_user_id'],  name="unique_searches")
+        ]
+        ordering = ["-created"]
+
+    def __str__(self):
+        return f"{self.user_id} searched {self.searched_user}"
 
 class Post(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="post")

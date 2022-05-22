@@ -15,10 +15,11 @@ from django import forms
 from django.core.paginator import Paginator
 from itertools import chain
 import json
+from datetime import date, datetime
 import networkx as nx
 import matplotlib.pyplot as plt
 from network.serializers.serializer import FollowersSerializer, FollowingSerializer, UserSerializer
-from .models import User, Post, UserFollowing
+from .models import User, Post, UserFollowing, SearchHistory
 
 class NewPostForm(forms.Form):
     image = forms.ImageField(required=False, widget=forms.FileInput(attrs={'id': 'newPostFormImage'}))
@@ -150,8 +151,14 @@ def profile(request, user_id):
         toUser = User.objects.get(id=user_id)
         posts = Post.objects.filter(creator = toUser).order_by('-timestamp')
         followerCount = toUser.followerCount
-
         followingCount = toUser.followingCount
+
+        if fromUser.id != toUser.id:
+            try:
+                history = SearchHistory.objects.get(user_id=fromUser, searched_user=toUser)
+                history.created = datetime.now()
+            except ObjectDoesNotExist:
+                SearchHistory.objects.create(user_id=fromUser, searched_user=toUser)
 
         try:
             UserFollowing.objects.get(user_id=fromUser, following_user_id=toUser)
