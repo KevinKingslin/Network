@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from network.models import UserFollowing
+from network.models import UserFollowing, SearchHistory
 from rest_framework import serializers
 
 User = get_user_model()
@@ -15,10 +15,17 @@ class FollowersSerializer(serializers.ModelSerializer):
         model = UserFollowing
         fields = ("id", "user_id", "created")
 
+class HistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SearchHistory
+        fields = ("id", "searched_user_id", "created")
+
+
 class UserSerializer(serializers.ModelSerializer):
 
     following = serializers.SerializerMethodField()
     followers = serializers.SerializerMethodField()
+    searchhistory = serializers.SerializerMethodField()
     
     class Meta:
         model = User
@@ -28,6 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "following",
             "followers",
+            "searchhistory",
         )
         extra_kwargs = {"password": {"write_only": True}}
 
@@ -36,3 +44,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_followers(self, obj):
         return list(obj.followers.values_list('user_id', flat=True))
+
+    def get_history(self, obj):
+        return list(obj.searchhistory.values_list('searched_user', flat=True))

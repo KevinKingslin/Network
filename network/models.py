@@ -22,8 +22,8 @@ class UserFollowing(models.Model):
         return f"{self.user_id} follows {self.following_user_id}"
 
 class SearchHistory(models.Model):
-    user_id = models.ForeignKey("User", related_name="user", on_delete=models.CASCADE)
-    searched_user = models.ForeignKey("User", related_name="searchhistory", on_delete=models.CASCADE)
+    user_id = models.ForeignKey("User", related_name="searchhistory", on_delete=models.CASCADE)
+    searched_user = models.ForeignKey("User", related_name="user", on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
