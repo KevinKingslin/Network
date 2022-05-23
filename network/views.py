@@ -117,6 +117,29 @@ def toggleLike(request, post_id):
 #page rank - idk
 #Common likes on a post
 
+
+def Recommend(fromUser):
+    Candidates = GenerateCandidates(fromUser)
+    history = RankSearchHistory(fromUser)
+    influence = RankInfluence(fromUser)
+    likes = RankCommonLikes(Candidates, fromUser)
+    #mutual = RankMutualFollowers()
+    ReccomendList = {}
+
+    for user in Candidates:
+        score = 0
+        score = influence[user] + likes[user]
+        if user in history:
+            score += 0.4
+        ReccomendList[user] = score
+    
+    ReccomendList = sorted(ReccomendList, key=ReccomendList.get, reverse=True)
+    print(ReccomendList)
+    return ReccomendList
+
+    #weights = {"mutual-friends": 1, "history": 0.5, "influence": 0.75, "commonlikes": 0.8}
+
+
 def RankSearchHistory(fromUser):
     serializer = UserSerializer()
     history = serializer.get_history(fromUser)
@@ -149,25 +172,24 @@ def RankInfluence(fromUser):
     nx.draw(G, with_labels=True)
 
     SecondOrder = list(set(SecondOrder))
-    RecommendList = []
+    RecommendList = {}
     for node in SecondOrder:
         user = User.objects.get(id=node)
-        RecommendList.append((node, G.in_degree(node) / user.followingCount))
+        RecommendList[node] = G.in_degree(node) / user.followingCount
 
     # Sort recommend list on number of mutual followers
-    RecommendList.sort(key=lambda y: y[1], reverse=True)
-    print(RecommendList)
+    #RecommendList.sort(key=lambda y: y[1], reverse=True)
     return RecommendList
 
 def RankCommonLikes(Candidates, fromUser):
-    RecommendList = []
+    RecommendList = {}
     serializer = UserSerializer()
     likes = set(serializer.get_likes(fromUser))
     for user in Candidates:
         clikes = set(serializer.get_likes(User.objects.get(id=user)))
 
         jaccard_index = len(likes & clikes) / len(likes | clikes)
-        RecommendList.append((user, jaccard_index))
+        RecommendList[user] = jaccard_index
     return RecommendList
 
 
@@ -179,12 +201,13 @@ def RankMutualFollowers(Candidates, FirstOrderFollowing, AllEdges):
     G.add_edges_from(AllEdges)
     nx.draw(G, with_labels=True)
 
-    RecommendList = []
+    RecommendList = {}
     for node in Candidates:
-        RecommendList.append((node, G.in_degree(node)))
+        RecommendList[node] = G.in_degree(node)
 
     # Sort recommend list on number of mutual followers
-    RecommendList.sort(key=lambda y: y[1], reverse=True)
+    #RecommendList.sort(key=lambda y: y[1], reverse=True)
+
     return RecommendList
 
 
@@ -233,7 +256,7 @@ def profile(request, user_id):
         except ObjectDoesNotExist: 
             following = False
 
-        RankCommonLikes(GenerateCandidates(fromUser), fromUser)
+        Recommend(fromUser)
 
         mutualFollowerCount = 0
         for record in fromUser.following.all():
