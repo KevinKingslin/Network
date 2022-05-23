@@ -1,3 +1,4 @@
+from pydoc import cli
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
@@ -16,8 +17,8 @@ import json
 from datetime import date, datetime
 import networkx as nx
 import matplotlib.pyplot as plt
-from network.serializers.serializer import UserSerializer
-from .models import User, Post, UserFollowing, SearchHistory
+from network.serializers.serializer import UserSerializer, LikeSerializer
+from .models import User, Post, UserFollowing, SearchHistory, Like
 
 class NewPostForm(forms.Form):
     image = forms.ImageField(required=False, widget=forms.FileInput(attrs={'id': 'newPostFormImage'}))
@@ -116,6 +117,77 @@ def toggleLike(request, post_id):
 #page rank - idk
 #Common likes on a post
 
+def RankSearchHistory(fromUser):
+    serializer = UserSerializer()
+    history = serializer.get_history(fromUser)
+    return history    
+
+def RankInfluence(fromUser):
+    serializer = UserSerializer()
+    AllEdges = []
+    SecondOrder = []
+    FirstOrderFollowing = serializer.get_following(fromUser)
+
+    # Get first order neighbours
+    for user_id in FirstOrderFollowing:
+        FollowUser = User.objects.get(id=user_id)
+        AllEdges.append((fromUser.id, user_id))
+
+        # Get second order neighbours
+        for seconduser in serializer.get_following(FollowUser):
+            if seconduser not in FirstOrderFollowing and seconduser != fromUser.id:
+                SecondOrder.append(seconduser)
+
+            # Prevent fromUser from being added as edge
+            if seconduser != fromUser.id:
+                AllEdges.append((FollowUser.id, seconduser))
+
+    G = nx.DiGraph()
+    G.add_nodes_from(FirstOrderFollowing)
+    G.add_nodes_from(SecondOrder)
+    G.add_edges_from(AllEdges)
+    nx.draw(G, with_labels=True)
+
+    SecondOrder = list(set(SecondOrder))
+    RecommendList = []
+    for node in SecondOrder:
+        user = User.objects.get(id=node)
+        RecommendList.append((node, G.in_degree(node) / user.followingCount))
+
+    # Sort recommend list on number of mutual followers
+    RecommendList.sort(key=lambda y: y[1], reverse=True)
+    print(RecommendList)
+    return RecommendList
+
+def RankCommonLikes(Candidates, fromUser):
+    RecommendList = []
+    serializer = UserSerializer()
+    likes = set(serializer.get_likes(fromUser))
+    for user in Candidates:
+        clikes = set(serializer.get_likes(User.objects.get(id=user)))
+
+        jaccard_index = len(likes & clikes) / len(likes | clikes)
+        RecommendList.append((user, jaccard_index))
+    return RecommendList
+
+
+# Rank users based on mutual followers only
+def RankMutualFollowers(Candidates, FirstOrderFollowing, AllEdges):
+    G = nx.DiGraph()
+    G.add_nodes_from(FirstOrderFollowing)
+    G.add_nodes_from(Candidates)
+    G.add_edges_from(AllEdges)
+    nx.draw(G, with_labels=True)
+
+    RecommendList = []
+    for node in Candidates:
+        RecommendList.append((node, G.in_degree(node)))
+
+    # Sort recommend list on number of mutual followers
+    RecommendList.sort(key=lambda y: y[1], reverse=True)
+    return RecommendList
+
+
 def GenerateCandidates(fromUser):
     serializer = UserSerializer()
     AllEdges = []
@@ -160,6 +232,8 @@ def profile(request, user_id):
             following = True
         except ObjectDoesNotExist: 
             following = False
+
+        RankCommonLikes(GenerateCandidates(fromUser), fromUser)
 
         mutualFollowerCount = 0
         for record in fromUser.following.all():
