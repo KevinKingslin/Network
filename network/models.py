@@ -5,7 +5,6 @@ class User(AbstractUser):
     profilePicture = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
     followerCount = models.IntegerField(default=0)
     followingCount = models.IntegerField(default=0)
-    likedBy = models.ManyToManyField('Post', related_name="likedBy", blank=True)
 
 class UserFollowing(models.Model):
     user_id = models.ForeignKey("User", related_name="following", on_delete=models.CASCADE)
@@ -45,6 +44,13 @@ class Post(models.Model):
 
     def __str__(self):
         return str(self.description)
+
+class Like(models.Model):
+    user_id = models.ForeignKey(User, related_name='likedBy', on_delete=models.CASCADE)
+    post_id = models.ForeignKey(Post, related_name='post', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user_id} liked {self.post_id}"
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
