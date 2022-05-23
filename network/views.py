@@ -1,5 +1,3 @@
-from cProfile import label
-from curses.ascii import US
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
@@ -18,7 +16,7 @@ import json
 from datetime import date, datetime
 import networkx as nx
 import matplotlib.pyplot as plt
-from network.serializers.serializer import FollowersSerializer, FollowingSerializer, UserSerializer
+from network.serializers.serializer import UserSerializer
 from .models import User, Post, UserFollowing, SearchHistory
 
 class NewPostForm(forms.Form):
@@ -108,7 +106,17 @@ def toggleLike(request, post_id):
         else:
             return HttpResponse(status=402)
 
-def Recommend(fromUser):
+
+#Attributes for ranking:
+#Mutual Followers
+#Search history
+#Influence of a user
+#Number of posts - idk
+#Number of likes - idk
+#page rank - idk
+#Common likes on a post
+
+def GenerateCandidates(fromUser):
     serializer = UserSerializer()
     AllEdges = []
     SecondOrder = []
@@ -127,22 +135,9 @@ def Recommend(fromUser):
             # Prevent fromUser from being added as edge
             if seconduser != fromUser.id:
                 AllEdges.append((FollowUser.id, seconduser))
-
-    G = nx.DiGraph()
-    G.add_nodes_from(FirstOrderFollowing)
-    G.add_nodes_from(SecondOrder)
-    G.add_edges_from(AllEdges)
-    nx.draw(G, with_labels=True)
-
     SecondOrder = list(set(SecondOrder))
-    RecommendList = []
-    for node in SecondOrder:
-        RecommendList.append((node, G.in_degree(node)))
+    return SecondOrder
 
-    # Sort recommend list on number of mutual followers
-    RecommendList.sort(key=lambda y: y[1], reverse=True)
-    print(RecommendList)
-    return RecommendList
 
 def profile(request, user_id):
     if request.method == "GET":
