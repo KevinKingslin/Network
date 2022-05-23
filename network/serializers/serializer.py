@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from network.models import UserFollowing, SearchHistory
+from network.models import Like, UserFollowing, SearchHistory
 from rest_framework import serializers
 
 User = get_user_model()
@@ -20,6 +20,10 @@ class HistorySerializer(serializers.ModelSerializer):
         model = SearchHistory
         fields = ("id", "searched_user_id", "created")
 
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ("id", "user_id", "post_id")
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -47,3 +51,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_history(self, obj):
         return list(obj.searchhistory.values_list('searched_user', flat=True))
+
+    def get_likes(self, obj):
+        return list(obj.likedBy.values_list('post_id', flat=True))
