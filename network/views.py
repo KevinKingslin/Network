@@ -1,4 +1,4 @@
-from curses.ascii import US
+from pydoc import cli
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
@@ -14,10 +14,11 @@ from django import forms
 from django.core.paginator import Paginator
 from itertools import chain
 import json
+from datetime import date, datetime
 import networkx as nx
 import matplotlib.pyplot as plt
-from .models import User, Post, UserFollowing
-from .serializers import UserSerializer
+from network.serializers.serializer import UserSerializer, LikeSerializer
+from .models import User, Post, UserFollowing, SearchHistory, Like
 
 class NewPostForm(forms.Form):
     image = forms.ImageField(required=False, widget=forms.FileInput(attrs={'id': 'newPostFormImage'}))
@@ -26,7 +27,6 @@ class NewPostForm(forms.Form):
 @login_required(login_url="login")
 def index(request, following=None):
     likeList = []
-
     try:
         user = User.objects.get(id=request.user.id)
     except:
@@ -107,6 +107,133 @@ def toggleLike(request, post_id):
         else:
             return HttpResponse(status=402)
 
+
+#Attributes for ranking:
+#Mutual Followers
+#Search history
+#Influence of a user
+#Number of posts - idk
+#Number of likes - idk
+#page rank - idk
+#Common likes on a post
+
+
+def Recommend(fromUser):
+    Candidates = GenerateCandidates(fromUser)
+    history = RankSearchHistory(fromUser)
+    influence = RankInfluence(fromUser)
+    likes = RankCommonLikes(Candidates, fromUser)
+    #mutual = RankMutualFollowers()
+    ReccomendList = {}
+
+    for user in Candidates:
+        score = 0
+        score = influence[user] + likes[user]
+        if user in history:
+            score += 0.4
+        ReccomendList[user] = score
+    
+    ReccomendList = sorted(ReccomendList, key=ReccomendList.get, reverse=True)
+    print(ReccomendList)
+    return ReccomendList
+
+    #weights = {"mutual-friends": 1, "history": 0.5, "influence": 0.75, "commonlikes": 0.8}
+
+
+def RankSearchHistory(fromUser):
+    serializer = UserSerializer()
+    history = serializer.get_history(fromUser)
+    return history    
+
+def RankInfluence(fromUser):
+    serializer = UserSerializer()
+    AllEdges = []
+    SecondOrder = []
+    FirstOrderFollowing = serializer.get_following(fromUser)
+
+    # Get first order neighbours
+    for user_id in FirstOrderFollowing:
+        FollowUser = User.objects.get(id=user_id)
+        AllEdges.append((fromUser.id, user_id))
+
+        # Get second order neighbours
+        for seconduser in serializer.get_following(FollowUser):
+            if seconduser not in FirstOrderFollowing and seconduser != fromUser.id:
+                SecondOrder.append(seconduser)
+
+            # Prevent fromUser from being added as edge
+            if seconduser != fromUser.id:
+                AllEdges.append((FollowUser.id, seconduser))
+
+    G = nx.DiGraph()
+    G.add_nodes_from(FirstOrderFollowing)
+    G.add_nodes_from(SecondOrder)
+    G.add_edges_from(AllEdges)
+    nx.draw(G, with_labels=True)
+
+    SecondOrder = list(set(SecondOrder))
+    RecommendList = {}
+    for node in SecondOrder:
+        user = User.objects.get(id=node)
+        RecommendList[node] = G.in_degree(node) / user.followingCount
+
+    # Sort recommend list on number of mutual followers
+    #RecommendList.sort(key=lambda y: y[1], reverse=True)
+    return RecommendList
+
+def RankCommonLikes(Candidates, fromUser):
+    RecommendList = {}
+    serializer = UserSerializer()
+    likes = set(serializer.get_likes(fromUser))
+    for user in Candidates:
+        clikes = set(serializer.get_likes(User.objects.get(id=user)))
+
+        jaccard_index = len(likes & clikes) / len(likes | clikes)
+        RecommendList[user] = jaccard_index
+    return RecommendList
+
+
+# Rank users based on mutual followers only
+def RankMutualFollowers(Candidates, FirstOrderFollowing, AllEdges):
+    G = nx.DiGraph()
+    G.add_nodes_from(FirstOrderFollowing)
+    G.add_nodes_from(Candidates)
+    G.add_edges_from(AllEdges)
+    nx.draw(G, with_labels=True)
+
+    RecommendList = {}
+    for node in Candidates:
+        RecommendList[node] = G.in_degree(node)
+
+    # Sort recommend list on number of mutual followers
+    #RecommendList.sort(key=lambda y: y[1], reverse=True)
+
+    return RecommendList
+
+
+def GenerateCandidates(fromUser):
+    serializer = UserSerializer()
+    AllEdges = []
+    SecondOrder = []
+    FirstOrderFollowing = serializer.get_following(fromUser)
+
+    # Get first order neighbours
+    for user_id in FirstOrderFollowing:
+        FollowUser = User.objects.get(id=user_id)
+        AllEdges.append((fromUser.id, user_id))
+
+        # Get second order neighbours
+        for seconduser in serializer.get_following(FollowUser):
+            if seconduser not in FirstOrderFollowing and seconduser != fromUser.id:
+                SecondOrder.append(seconduser)
+
+            # Prevent fromUser from being added as edge
+            if seconduser != fromUser.id:
+                AllEdges.append((FollowUser.id, seconduser))
+    SecondOrder = list(set(SecondOrder))
+    return SecondOrder
+
+
 def profile(request, user_id):
     if request.method == "GET":
         likeList = []
@@ -114,19 +241,27 @@ def profile(request, user_id):
         toUser = User.objects.get(id=user_id)
         posts = Post.objects.filter(creator = toUser).order_by('-timestamp')
         followerCount = toUser.followerCount
-
         followingCount = toUser.followingCount
 
+        if fromUser.id != toUser.id:
+            try:
+                history = SearchHistory.objects.get(user_id=fromUser, searched_user=toUser)
+                history.created = datetime.now()
+            except ObjectDoesNotExist:
+                SearchHistory.objects.create(user_id=fromUser, searched_user=toUser)
+
         try:
-            UserFollowing.objects.get(following=fromUser, follower=toUser)
+            UserFollowing.objects.get(user_id=fromUser, following_user_id=toUser)
             following = True
         except ObjectDoesNotExist: 
             following = False
 
+        Recommend(fromUser)
+
         mutualFollowerCount = 0
         for record in fromUser.following.all():
             try:
-                UserFollowing.objects.get(following_id=record.follower_id, follower_id=toUser)
+                UserFollowing.objects.get(user_id=record.following_user_id, following_user_id=toUser)
                 mutualFollowerCount += 1
             except ObjectDoesNotExist:
                 pass
@@ -157,14 +292,14 @@ def toggleFollow(request, user_id):
             fromUser = User.objects.get(id=request.user.id)
             toUser = User.objects.get(id=user_id)
             if data.get('follow') == "false":
-                UserFollowing.objects.create(following=fromUser, follower=toUser)
+                UserFollowing.objects.create(user_id=fromUser, following_user_id=toUser)
                 fromUser.followingCount += 1
                 toUser.followerCount += 1
                 fromUser.save()
                 toUser.save()
                 return HttpResponse(status=200)
             elif data.get('follow') == "true":
-                record = UserFollowing.objects.get(following=fromUser, follower=toUser)
+                record = UserFollowing.objects.get(user_id=fromUser, following_user_id=toUser)
                 record.delete()
                 fromUser.followingCount -= 1
                 toUser.followerCount -= 1
