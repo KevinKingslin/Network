@@ -61,7 +61,7 @@
             </li>
         </ul>
     </div> -->
-    <div style="display: flex;justify-content: center; align-items: center;">
+    <div class="container" style="display: flex;justify-content: center">
         <div>
             <!-- <div class="newPostFormContainer">
                 <form method="POST" action="{% url 'createPost' %}" enctype="multipart/form-data" style="display: flex; padding-top: 2px;">
@@ -81,11 +81,35 @@
                 </form>
             </div> -->
             
+
+            
             <!--Post Template -->
-        {% if postCount != 0 %}
-        {% for post in posts %}
+        
         <div class="row">
-            <div class="col-sm-6 offset-sm-3">
+                <div class="col-sm-4 fixed">
+                    
+                    <div class="post-block">
+                        <h5 style="font: 30px; text-align: center;">You may know</h5>
+                        <hr>
+                        {% if RecommendListCount != 0 %}
+                        {% for user in RecommendList %}
+                        <div>
+                            <img src="media/images/user1.jpg" alt="User" class="author-img" style="float: left; margin-right: 20px;">
+                            <div style="margin-left: 70px;">
+                                <p class="mb-0"><a href="#" class="text-dark">{{ user }}</a></p>
+                                <p>Followed by kevin._.kingslin + 3 more</p>
+                            </div>
+                            <hr>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                    
+                </div>
+            
+            <div class="col-sm-6 scollit">
+            {% if postCount != 0 %}
+        {% for post in posts %}
                 <div class="post-block">
                     <div class="d-flex justify-content-between">
                         <div class="d-flex mb-3">
@@ -160,11 +184,12 @@
                         <a href="#!" class="text-dark">View More comments <span class="font-weight-bold">(12)</span></a>
                     </div>
                 </div>
+                {% endfor %}
+                {% endif %}
             </div>
         </div>
-        {% endfor %}
-        {% endif %}
-
+        
+        
         </div>
     </div>
 
