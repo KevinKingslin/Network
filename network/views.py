@@ -58,13 +58,16 @@ def index(request, following=None):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    RecommendList = Recommend(FromUser)
+
     return render(request, "network/index.html", {
         "newpostform": NewPostForm(),
-        "username": request.user.username,
         "posts": page_obj,
         "postCount": len(posts),
         #"PostLikes": PostLikes,
-        "likes": likeList
+        "likes": likeList,
+        "RecommendList": RecommendList,
+        "RecommendListCount": len(RecommendList)
     })
 
 
@@ -152,8 +155,6 @@ def profile(request, user_id):
             following = True
         except ObjectDoesNotExist: 
             following = False
-
-        Recommend(fromUser)
 
         mutualFollowerCount = 0
         for record in fromUser.following.all():
