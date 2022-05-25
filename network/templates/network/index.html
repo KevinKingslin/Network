@@ -39,7 +39,7 @@
         height: 40px;
     }
 </style>
-    <div class="sidenav">
+    <!-- <div class="sidenav">
         <ul class="nav nav-pills flex-column mb-auto">
             <li>
                 <a href="{% url 'profile' request.user.id %}" class="nav-link">
@@ -60,10 +60,10 @@
                 </a>
             </li>
         </ul>
-    </div>
+    </div> -->
     <div style="display: flex;justify-content: center; align-items: center;">
         <div>
-            <div class="newPostFormContainer">
+            <!-- <div class="newPostFormContainer">
                 <form method="POST" action="{% url 'createPost' %}" enctype="multipart/form-data" style="display: flex; padding-top: 2px;">
                     {% csrf_token %}
                     <label for="newPostFormImage" class="newPost">
@@ -79,7 +79,7 @@
                         <button class="btn btn-primary" type="submit">Post</button>
                     </div>
                 </form>
-            </div>
+            </div> -->
             
             <!--Post Template -->
         {% if postCount != 0 %}
@@ -90,7 +90,7 @@
                     <div class="d-flex justify-content-between">
                         <div class="d-flex mb-3">
                             <div class="mr-2">
-                                <a href="#!" class="text-dark"><img src="img/user1.jpg" alt="User" class="author-img"></a>
+                                <a href="#!" class="text-dark"><img src="media/images/user1.jpg" alt="User" class="author-img"></a>
                             </div>
                             <div>
                                 <h5 class="mb-0"><a href="{% url 'profile' post.creator.id %}" class="text-dark">{{ post.creator }}</a></h5>
@@ -129,6 +129,7 @@
                             </div>
                             <!-- <a href="#!" class="text-dark"><span>Share</span></a> -->
                         </div>
+                        
                         <p class="mb-0">Liked by <a href="#!" class="text-muted font-weight-bold">John doe</a> & <a href="#!" class="text-muted font-weight-bold">25 others</a></p>
                     </div>
                     <hr>

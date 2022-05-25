@@ -115,3 +115,38 @@ main img
 {
     max-width: 100%;
 }
+
+
+
+.field-container {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    width: 330px;
+    height: 40px;
+}
+
+.field {
+    border: 0;
+    width: 400px;
+    height: 100%;
+    margin-top: 8px;
+    padding: 10px 20px;
+    background: white;
+    border-radius: 3px;
+    box-shadow: 0px 8px 15px rgba(75, 72, 72, 0.1);
+    transition: all 0.4s ease;
+}
+.field:focus {
+    outline: none;
+    box-shadow: 0px 9px 20px rgba(75, 72, 72, 0.3);
+}
+.field:focus + .icons-container .icon-close {
+    opacity: 1;
+    transform: translateX(0);
+}
+.field:focus + .icons-container .icon-search {
+    opacity: 0;
+    transform: translateX(200%);
+}
