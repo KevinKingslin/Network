@@ -14,7 +14,10 @@ from django import forms
 from django.core.paginator import Paginator
 from itertools import chain
 import json
+import random
 from datetime import date, datetime
+
+from network.serializers.serializer import LikeSerializer, UserSerializer
 from .models import User, Post, UserFollowing, SearchHistory, Like
 from .recommend import Recommend
 
@@ -24,21 +27,32 @@ class NewPostForm(forms.Form):
 
 @login_required(login_url="login")
 def index(request, following=None):
-    likeList = []
-    try:
-        user = User.objects.get(id=request.user.id)
-    except:
-        return JsonResponse({"error": "Incorrect credentials."}, status=404)
+    serializer = UserSerializer()
 
+    likeserializer = LikeSerializer()
+    likeList = []
+    FromUser = User.objects.get(id=request.user.id)
+    FollowingList = serializer.get_following(FromUser)
     if following == None:
-        posts = list(Post.objects.all().order_by('-timestamp'))
+        posts = list(Post.objects.filter(creator__in=FollowingList).order_by('-timestamp'))
     # elif following == "following":
     #     posts = [Post.objects.filter(creator=users) for users in user.followings.all()]
     #     posts = list(chain(*posts))
     #     posts.sort(key=lambda x: x.timestamp, reverse=True)
 
-    for result in user.likedBy.all():
+    for result in FromUser.likedBy.all():
         likeList.append(result.id)
+
+    # PostLikes = {}
+    # for post in posts:
+    #     LikeUser = likeserializer.get_likes(post)
+    #     if FromUser.id in LikeUser:
+    #         LikeUser.remove(FromUser.id)
+
+    #     if LikeUser != []:
+    #         LikeUser = random.choice(LikeUser)
+    #         LikeUser = User.objects.get(id=LikeUser).username
+    #         PostLikes[post.id] = (LikeUser, len(likeserializer.get_likes(post)) - 1)
 
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
@@ -49,6 +63,7 @@ def index(request, following=None):
         "username": request.user.username,
         "posts": page_obj,
         "postCount": len(posts),
+        #"PostLikes": PostLikes,
         "likes": likeList
     })
 
