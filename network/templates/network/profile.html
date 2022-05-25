@@ -4,7 +4,7 @@
     <div class="profileHeader">
         <div>
             {% if user.profilePicture %}
-                <img src="{{ post.creator.profilePicture.url }}" class="img-responsive profilePicture"\>
+                <img src="{{ user.profilePicture.url }}" class="img-responsive profilePicture"\>
             {% else %}
                 <img src='/media/profilePictures/default.jpg' class="img-responsive profilePicture"/>
             {% endif %}
