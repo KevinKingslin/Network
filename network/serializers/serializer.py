@@ -32,7 +32,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     following = serializers.SerializerMethodField()
     followers = serializers.SerializerMethodField()
-    searchhistory = serializers.SerializerMethodField()
     
     class Meta:
         model = User
@@ -42,7 +41,6 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "following",
             "followers",
-            "searchhistory",
         )
         extra_kwargs = {"password": {"write_only": True}}
 

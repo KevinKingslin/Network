@@ -59,6 +59,9 @@ def index(request, following=None):
     page_obj = paginator.get_page(page_number)
 
     RecommendList = Recommend(FromUser)
+    MutualList = {}
+    for user in RecommendList:
+        MutualList[user] = MutualFollowerCount(FromUser, user)
 
     return render(request, "network/index.html", {
         "newpostform": NewPostForm(),
@@ -67,7 +70,8 @@ def index(request, following=None):
         #"PostLikes": PostLikes,
         "likes": likeList,
         "RecommendList": RecommendList,
-        "RecommendListCount": len(RecommendList)
+        "RecommendListCount": len(RecommendList),
+        "MutualList": MutualList,
     })
 
 
@@ -134,6 +138,16 @@ def toggleLike(request, post_id):
 #Common likes on a post
 
 
+def MutualFollowerCount(FromUser, ToUser):
+    Count = 0
+    for record in FromUser.following.all():
+        try:
+            UserFollowing.objects.get(user_id=record.following_user_id, following_user_id=ToUser)
+            Count += 1
+        except ObjectDoesNotExist:
+            pass
+    return Count
+
 def profile(request, user_id):
     if request.method == "GET":
         likeList = []
@@ -156,14 +170,8 @@ def profile(request, user_id):
         except ObjectDoesNotExist: 
             following = False
 
-        mutualFollowerCount = 0
-        for record in fromUser.following.all():
-            try:
-                UserFollowing.objects.get(user_id=record.following_user_id, following_user_id=toUser)
-                mutualFollowerCount += 1
-            except ObjectDoesNotExist:
-                pass
-
+        mutualFollowerCount = MutualFollowerCount(fromUser, toUser)
+        
         for result in fromUser.likedBy.all():
             likeList.append(result.id)
 

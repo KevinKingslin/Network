@@ -26,7 +26,7 @@
   </head>
   <body>
     <div style="text-align:left">
-      <nav class="navbar-light fixed-top" style="text-align:center;width:100vw;z-index:1; background-color: #fbe399">
+      <nav class="navbar-light fixed-top" style="text-align:center;width:100vw;z-index:10; background-color: #fbe399">
           <a href="{% url 'index' %}" style="text-decoration:none;color:black; float: left; margin-left: 70px;">
             <img id="logo" src="{% static 'network/logo.png' %}" style="width: 200px;">
           </a>
@@ -40,7 +40,7 @@
               </div>
             </div>
           </fieldset> -->
-          <div style="display: inline; float: right;">
+          <div style="display: inline; float: right; margin-right: 30px;">
             <a href="{% url 'profile' request.user.id %}" class="nav-link" style="float: right">
               <img src="{{ request.user.profilePicture.url }}" style="width: 40px; border-radius: 40px;">
             </a>

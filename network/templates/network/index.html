@@ -1,4 +1,5 @@
 {% extends "network/layout.html" %}
+{% load getdictvalue %}
 
 {% block body %}
 <style>
@@ -94,10 +95,10 @@
                         {% if RecommendListCount != 0 %}
                         {% for user in RecommendList %}
                         <div>
-                            <img src="media/images/user1.jpg" alt="User" class="author-img" style="float: left; margin-right: 20px;">
+                            <img src="{{ user.profilePicture.url }}" alt="profile picture" class="author-img" style="float: left; margin-right: 20px;">
                             <div style="margin-left: 70px;">
-                                <p class="mb-0"><a href="#" class="text-dark">{{ user }}</a></p>
-                                <p>Followed by kevin._.kingslin + 3 more</p>
+                                <p class="mb-0"><a href="{% url 'profile' user.id %}" class="text-dark">{{ user.username }}</a></p>
+                                <p>Followed by <a href="#" class="text-dark">{{ MutualList|get_value:user }} people</a></p>
                             </div>
                             <hr>
                         </div>

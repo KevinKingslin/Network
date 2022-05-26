@@ -34,7 +34,7 @@ def Recommend(fromUser):
         score = influence[user] + likes[user] + mutual[user]
         if user in history:
             score += 0.4
-        user = User.objects.get(id=user).username
+        user = User.objects.get(id=user)
         ReccomendList[user] = score
     
     ReccomendList = sorted(ReccomendList, key=ReccomendList.get, reverse=True)
