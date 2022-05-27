@@ -40,7 +40,8 @@ def index(request, following=None):
         likes = likeserializer.get_likes(post)
         for user in likes:
             LikeUser.append(User.objects.get(id=user))
-        PostData.append((post, LikeUser))
+        comments = Comment.objects.filter(post_id=post)
+        PostData.append((post, LikeUser, comments.first(), comments.count()))
     
     paginator = Paginator(PostData, 10)
     page_number = request.GET.get('page')

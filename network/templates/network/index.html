@@ -86,7 +86,7 @@
             
             <div class="col-sm-6 scollit">
             {% if postCount != 0 %}
-        {% for post, likes in posts %}
+        {% for post, likes, comment, CommentCount in posts %}
                 <div class="post-block">
                     <div class="d-flex justify-content-between">
                         <div class="d-flex mb-3">
@@ -150,10 +150,10 @@
                         <!-- Comment content -->
                         <div class="comment-view-box mb-3">
                             <div class="d-flex mb-2">
-                                <img src="img/user2.jpg" alt="User img" class="author-img author-img--small mr-2">
+                                <img src="{{ comment.user_id.profilePicture.url }}" alt="User img" class="author-img author-img--small mr-2">
                                 <div>
-                                    <h6 class="mb-1"><a href="#!" class="text-dark">John doe</a> <small class="text-muted">1m</small></h6>
-                                    <p class="mb-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                                    <h6 class="mb-1"><a href="#!" class="text-dark">{{ comment.user_id.username }}</a> <small class="text-muted">{{ comment.created }}</small></h6>
+                                    <p class="mb-1">{{ comment.description }}</p>
                                     <div class="d-flex">
                                         <a href="#!" class="text-dark mr-2"><span><i class="fa fa-heart-o"></i></span></a>
                                         <a href="#!" class="text-dark mr-2"><span>Reply</span></a>
@@ -163,7 +163,7 @@
                         </div>
                         <!-- More Comments -->
                         <hr>
-                        <a href="#!" class="text-dark">View More comments <span class="font-weight-bold">(12)</span></a>
+                        <a href="#!" class="text-dark">View More comments <span class="font-weight-bold">({{ CommentCount|add:"-1" }})</span></a>
                     </div>
                 </div>
                 {% endfor %}
