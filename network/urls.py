@@ -16,4 +16,5 @@ urlpatterns = [
     path("posts/edit/<int:post_id>", views.editPost, name="editPost"),
     path("posts/toggleLike/<int:post_id>", views.toggleLike, name="toggleLike"),
     path("u/<int:user_id>/toggleFollow", views.toggleFollow, name="toggleFollow"),
+    path("posts/createcomment/<int:post_id>", views.CreateComment, name="CreateComment"),
 ]

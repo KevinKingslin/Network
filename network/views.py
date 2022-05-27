@@ -18,7 +18,7 @@ import random
 from datetime import date, datetime
 
 from network.serializers.serializer import LikeSerializer, UserSerializer
-from .models import User, Post, UserFollowing, SearchHistory, Like
+from .models import User, Post, UserFollowing, SearchHistory, Like, Comment
 from .recommend import Recommend
 
 class NewPostForm(forms.Form):
@@ -50,7 +50,7 @@ def index(request, following=None):
     MutualList = {}
     for user in RecommendList:
         MutualList[user] = MutualFollowerCount(FromUser, user)
-        
+
     return render(request, "network/index.html", {
         "newpostform": NewPostForm(),
         "posts": page_obj,
@@ -77,6 +77,15 @@ def createPost(request):
             return HttpResponseRedirect(reverse("index"))
     elif request.method == "PUT":
         pass
+
+@csrf_exempt
+def CreateComment(request, post_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        post = Post.objects.get(id=post_id)
+        comment = Comment.objects.create(user_id=request.user, post_id=post, description=data.get('comment'))
+        comment.save()
+        return HttpResponse(status=200)
 
 
 @csrf_exempt

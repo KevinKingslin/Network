@@ -94,3 +94,16 @@ function editPost(editForm, post_id){
     document.querySelector(`#postDescription-${post_id}`).innerHTML = editForm.editArea.value
     closeEdit(post_id)
 }
+
+function CreateNewComment(NewCommentForm, post_id){
+    event.preventDefault()
+    comment = document.getElementById(`NewComment-${post_id}`)
+    fetch(`posts/createcomment/${post_id}`,{
+        "method": 'POST',
+        "body": JSON.stringify({
+            "post_id": post_id,
+            "comment": comment.value
+        })
+    })
+    comment.value=""
+}
