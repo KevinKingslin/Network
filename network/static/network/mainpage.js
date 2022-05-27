@@ -30,7 +30,7 @@ function toggleLike(likeButton){
         likeIcon = document.getElementById(`likeIcon-${likeButton.id}`)
         console.log(likeIcon)
         likeIcon.className = "fa-solid fa-heart fa-beat fa-xl"
-        likeIcon.style.cssText = "--fa-animation-iteration-count: 1; --fa-animation-duration: 0.7s; color: red"
+        likeIcon.style.cssText = "--fa-animation-iteration-count: 1; --fa-animation-duration: 0.4s; color: red"
     }
 }
 

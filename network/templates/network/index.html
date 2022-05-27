@@ -99,13 +99,12 @@
                             </div>
                         </div>
                         <div class="post-block__user-options">
-                            <a href="#!" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false">
-                                        <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                            <a href="#!" id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId">
-                                <a class="dropdown-item text-dark" href="#!"><i class="fa fa-pencil mr-1"></i>Edit</a>
-                                <a class="dropdown-item text-danger" href="#!"><i class="fa fa-trash mr-1"></i>Delete</a>
+                                <a class="dropdown-item text-dark" href="#!"><i class="fa-light fa-pencil mr-1"></i>Edit</a>
+                                <a class="dropdown-item text-danger" href="#!"><i class="fa-light fa-trash-can mr-1"></i>Delete</a>
                             </div>
                         </div>
                     </div>
@@ -148,22 +147,26 @@
                                 </form> -->
                         </div>
                         <!-- Comment content -->
-                        <div class="comment-view-box mb-3">
-                            <div class="d-flex mb-2">
-                                <img src="{{ comment.user_id.profilePicture.url }}" alt="User img" class="author-img author-img--small mr-2">
-                                <div>
-                                    <h6 class="mb-1"><a href="#!" class="text-dark">{{ comment.user_id.username }}</a> <small class="text-muted">{{ comment.created }}</small></h6>
-                                    <p class="mb-1">{{ comment.description }}</p>
-                                    <div class="d-flex">
-                                        <a href="#!" class="text-dark mr-2"><span><i class="fa fa-heart-o"></i></span></a>
-                                        <a href="#!" class="text-dark mr-2"><span>Reply</span></a>
+                        {% if comment %}
+                            <div class="comment-view-box mb-3">
+                                <div class="d-flex mb-2">
+                                    <img src="{{ comment.user_id.profilePicture.url }}" alt="User img" class="author-img author-img--small mr-2">
+                                    <div>
+                                        <h6 class="mb-1"><a href="#!" class="text-dark">{{ comment.user_id.username }}</a> <small class="text-muted">{{ comment.created }}</small></h6>
+                                        <p class="mb-1">{{ comment.description }}</p>
+                                        <div class="d-flex">
+                                            <a href="#!" class="text-dark mr-2"><span><i class="fa fa-heart-o"></i></span></a>
+                                            <a href="#!" class="text-dark mr-2"><span>Reply</span></a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        {% endif %}
                         <!-- More Comments -->
-                        <hr>
-                        <a href="#!" class="text-dark">View More comments <span class="font-weight-bold">({{ CommentCount|add:"-1" }})</span></a>
+                        {% if CommentCount > 1 %}
+                            <hr>
+                            <a href="#!" class="text-dark">View More comments <span class="font-weight-bold">({{ CommentCount|add:"-1" }})</span></a>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
