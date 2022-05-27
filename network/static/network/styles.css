@@ -35,8 +35,12 @@
 .likeButton {
     padding: 0;
     border: none;
-    background: none; 
+    background: none;
     padding-left: 10px;
+}
+
+.likeButton:focus{
+    outline: none;
 }
 
 .postDescription {

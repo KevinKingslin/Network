@@ -39,29 +39,15 @@
         width: 100%;
         height: 40px;
     }
+
+    .material-symbols-outlined {
+        font-variation-settings:
+        'FILL' 1,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 48
+    }
 </style>
-    <!-- <div class="sidenav">
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li>
-                <a href="{% url 'profile' request.user.id %}" class="nav-link">
-                    <img src="static/network/svg/person-circle.svg">
-                    {{ request.user.username }}
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'index' %}" class="nav-link">
-                    <img src="static/network/svg/display.svg">
-                    All Posts
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'following' 'following'%}" class="nav-link">
-                    <img src="static/network/svg/people-fill.svg">
-                    Following
-                </a>
-            </li>
-        </ul>
-    </div> -->
     <div class="container" style="display: flex;justify-content: center">
         <div>
             <!-- <div class="newPostFormContainer">
@@ -110,7 +96,7 @@
             
             <div class="col-sm-6 scollit">
             {% if postCount != 0 %}
-        {% for post in posts %}
+        {% for post, likes in posts %}
                 <div class="post-block">
                     <div class="d-flex justify-content-between">
                         <div class="d-flex mb-3">
@@ -119,7 +105,7 @@
                             </div>
                             <div>
                                 <h5 class="mb-0"><a href="{% url 'profile' post.creator.id %}" class="text-dark">{{ post.creator }}</a></h5>
-                                <p class="mb-0 text-muted">5m</p>
+                                <p class="mb-0 text-muted">{{ post.timestamp|timestamp }}</p>
                             </div>
                         </div>
                         <div class="post-block__user-options">
@@ -135,27 +121,25 @@
                     </div>
                     <div class="post-block__content mb-2">
                         <p>{{ post.description }}</p>
-                        <img src="{{ post.image.url }}" alt="Content img" />
+                        <img src="{{ post.image.url }}" loading="lazy" alt="Content img" />
                     </div>
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-2">
                             <div class="d-flex">
-                                {% if post.id in likes %}
+                                {% if request.user in likes %}
                                     <button id={{ post.id }} onclick=toggleLike(this) class="likeButton" data-like="true">
-                                        <img src="static/network/svg/heart-fill.svg">
+                                        <a class="text-dark mr-2"><span><i id="likeIcon-{{post.id}}" class="fa-solid fa-heart fa-xl" style="color: red;"></i></span></a>
                                     </button>
                                 {% else %}
                                     <button id={{ post.id }} onClick="toggleLike(this)" class="likeButton" data-like="false">
-                                        <img src="static/network/svg/heart.svg">
+                                        <a class="text-dark mr-2"><span><i id="likeIcon-{{post.id}}" class="fa-regular fa-heart fa-xl" style="color: red;"></i></span></a>
                                     </button>
                                 {% endif %}
                                 <!-- <a href="#!" class="text-danger mr-2"><span><i class="fa fa-heart"></i></span></a> 
                                 <a href="#!" class="text-dark mr-2"><span>Comment</span></a> -->
+                                <p class="mb-0">Liked by <a href="#" class="text-muted font-weight-bold"><span id="likeCount-{{post.id}}">{{ post.likes}}</span> people</a></p>
                             </div>
-                            <!-- <a href="#!" class="text-dark"><span>Share</span></a> -->
                         </div>
-                        
-                        <p class="mb-0">Liked by <a href="#!" class="text-muted font-weight-bold">John doe</a> & <a href="#!" class="text-muted font-weight-bold">25 others</a></p>
                     </div>
                     <hr>
                     <div class="post-block__comments">

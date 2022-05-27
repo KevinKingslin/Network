@@ -30,31 +30,19 @@ def index(request, following=None):
     serializer = UserSerializer()
 
     likeserializer = LikeSerializer()
-    likeList = []
     FromUser = User.objects.get(id=request.user.id)
     FollowingList = serializer.get_following(FromUser)
-    if following == None:
-        posts = list(Post.objects.filter(creator__in=FollowingList).order_by('-timestamp'))
-    # elif following == "following":
-    #     posts = [Post.objects.filter(creator=users) for users in user.followings.all()]
-    #     posts = list(chain(*posts))
-    #     posts.sort(key=lambda x: x.timestamp, reverse=True)
 
-    for result in FromUser.likedBy.all():
-        likeList.append(result.id)
-
-    # PostLikes = {}
-    # for post in posts:
-    #     LikeUser = likeserializer.get_likes(post)
-    #     if FromUser.id in LikeUser:
-    #         LikeUser.remove(FromUser.id)
-
-    #     if LikeUser != []:
-    #         LikeUser = random.choice(LikeUser)
-    #         LikeUser = User.objects.get(id=LikeUser).username
-    #         PostLikes[post.id] = (LikeUser, len(likeserializer.get_likes(post)) - 1)
-
-    paginator = Paginator(posts, 10)
+    PostData = []
+    posts = list(Post.objects.filter(creator__in=FollowingList).order_by('-timestamp'))
+    for post in posts:
+        LikeUser = []
+        likes = likeserializer.get_likes(post)
+        for user in likes:
+            LikeUser.append(User.objects.get(id=user))
+        PostData.append((post, LikeUser))
+    
+    paginator = Paginator(PostData, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -62,13 +50,11 @@ def index(request, following=None):
     MutualList = {}
     for user in RecommendList:
         MutualList[user] = MutualFollowerCount(FromUser, user)
-
+        
     return render(request, "network/index.html", {
         "newpostform": NewPostForm(),
         "posts": page_obj,
         "postCount": len(posts),
-        #"PostLikes": PostLikes,
-        "likes": likeList,
         "RecommendList": RecommendList,
         "RecommendListCount": len(RecommendList),
         "MutualList": MutualList,
@@ -117,10 +103,12 @@ def toggleLike(request, post_id):
         data = json.loads(request.body)
         if data.get("liked") is not None:
             if data["liked"] == "true":
-                post.likedBy.add(user)
+                like = Like.objects.create(user_id=user, post_id=post)
+                like.save()
                 post.likes += 1
             elif data["liked"] == "false":
-                post.likedBy.remove(user)
+                like = Like.objects.get(user_id=user, post_id=post)
+                like.delete()
                 post.likes -= 1
             post.save()
             return HttpResponse(status=202)

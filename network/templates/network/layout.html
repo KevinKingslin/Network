@@ -10,11 +10,11 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     
+    <script src="https://kit.fontawesome.com/4327753726.js" crossorigin="anonymous"></script>
+    
     <!-- CSS Stylesheets -->
     <link href="{% static 'network/styles.css' %}" rel="stylesheet">
     <link href="{% static 'network/post.css' %}" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@600&display=swap" rel="stylesheet">
@@ -45,14 +45,10 @@
               <img src="{{ request.user.profilePicture.url }}" style="width: 40px; border-radius: 40px;">
             </a>
             <button style="float: right">
-              <span class="material-symbols-outlined" style="font-size: 40px">
-                notifications
-                </span>
+              <i class="fa fa-bell-o fa-2x" aria-hidden="true"></i>
             </button>
             <button style="float: right">
-              <span class="material-symbols-outlined" style="font-size: 40px">
-                add_circle
-              </span>
+              <i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i>
             </button>
           </div>
             

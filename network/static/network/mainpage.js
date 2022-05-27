@@ -5,7 +5,7 @@ fullHeart = '<svg style="color: red; pointer-events: none;" xmlns="http://www.w3
 function toggleLike(likeButton){
     if (likeButton.dataset.like == "true"){
         likeButton.dataset.like = false
-        likeCount = document.querySelector(`#likeCount-${likeButton.id}`)
+        likeCount = document.getElementById(`likeCount-${likeButton.id}`)
         fetch(`/posts/toggleLike/${likeButton.id}`, {
             "method": "PUT",
             "body": JSON.stringify({
@@ -13,7 +13,9 @@ function toggleLike(likeButton){
             })
         })
         likeCount.innerHTML = `${parseInt(likeCount.innerHTML)-1}`
-        likeButton.innerHTML = hollowHeart
+        likeIcon = document.getElementById(`likeIcon-${likeButton.id}`)
+        console.log(likeIcon)
+        likeIcon.className = "fa-regular fa-heart fa-xl"
     }
     else if(likeButton.dataset.like == 'false'){
         likeButton.dataset.like = true
@@ -25,7 +27,10 @@ function toggleLike(likeButton){
             })
         })
         likeCount.innerHTML = `${parseInt(likeCount.innerHTML)+1}`
-        likeButton.innerHTML = fullHeart
+        likeIcon = document.getElementById(`likeIcon-${likeButton.id}`)
+        console.log(likeIcon)
+        likeIcon.className = "fa-solid fa-heart fa-beat fa-xl"
+        likeIcon.style.cssText = "--fa-animation-iteration-count: 1; --fa-animation-duration: 0.7s; color: red"
     }
 }
 
