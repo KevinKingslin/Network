@@ -32,17 +32,6 @@
     height: 100%;
 }
 
-.likeButton {
-    padding: 0;
-    border: none;
-    background: none;
-    padding-left: 10px;
-}
-
-.likeButton:focus{
-    outline: none;
-}
-
 .postDescription {
     padding-left: 10px; 
     padding-right: 10px;
@@ -153,4 +142,17 @@ main img
 .field:focus + .icons-container .icon-search {
     opacity: 0;
     transform: translateX(200%);
+}
+
+#ymk {
+    position: fixed;
+}
+
+#posts {
+    margin-left: 35%;
+}
+
+.modal-image {
+    float: left; 
+    margin-right: 20px;
 }

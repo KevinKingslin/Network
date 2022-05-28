@@ -14,7 +14,6 @@ function toggleLike(likeButton){
         })
         likeCount.innerHTML = `${parseInt(likeCount.innerHTML)-1}`
         likeIcon = document.getElementById(`likeIcon-${likeButton.id}`)
-        console.log(likeIcon)
         likeIcon.className = "fa-regular fa-heart fa-xl"
     }
     else if(likeButton.dataset.like == 'false'){
@@ -28,7 +27,6 @@ function toggleLike(likeButton){
         })
         likeCount.innerHTML = `${parseInt(likeCount.innerHTML)+1}`
         likeIcon = document.getElementById(`likeIcon-${likeButton.id}`)
-        console.log(likeIcon)
         likeIcon.className = "fa-solid fa-heart fa-beat fa-xl"
         likeIcon.style.cssText = "--fa-animation-iteration-count: 1; --fa-animation-duration: 0.4s; color: red"
     }
@@ -106,4 +104,53 @@ function CreateNewComment(NewCommentForm, post_id){
         })
     })
     comment.value=""
+}
+
+function CreateList(header, data){
+    title = document.getElementById('modal-title')
+    title.innerHTML = header
+    
+    body = document.getElementById('modal-body')
+    body.innerHTML = ''
+
+
+    data.forEach(user => {
+        console.log(user)
+            container = document.createElement('div')
+            container.className = 'mb-3 post-block'
+
+            UserImage = document.createElement('a')
+            UserImage.setAttribute('href', `u/${user.id}`);
+
+            var img = document.createElement('img');
+            img.className = 'author-img modal-image'
+            img.src = `${user.profilePicture}`;
+            img.setAttribute('draggable', false)
+
+            UserImage.appendChild(img)
+
+            UserDetailsContainer = document.createElement('div')
+
+            UserName = document.createElement('a')
+            UserName.setAttribute('href', `u/${user.id}`);
+            UserName.className = 'mb-0 text-dark'
+            UserName.innerHTML = `${user.username}`
+
+            UserDetailsContainer.appendChild(UserName)
+
+            container.appendChild(UserImage)
+            container.appendChild(UserName)
+            body.appendChild(container)
+        }
+    )
+}
+
+function GetMutual(FromUserID, ToUserID){
+    fetch(`u/${ToUserID}/Mutual`,{
+        "method": 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        CreateList("Followers", data)
+    })
 }

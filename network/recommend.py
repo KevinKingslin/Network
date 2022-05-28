@@ -107,3 +107,20 @@ def GenerateCandidates(fromUser):
 
     SecondOrder = list(set(SecondOrder))
     return SecondOrder
+
+def GetMutualFollowers(FromUser, ToUser):
+    serializer = UserSerializer()
+    FirstOrderFollowing, AllEdges = GetDegreeData(FromUser)
+    SecondOrder = []
+
+    # Get first order neighbours
+    for user_id in FirstOrderFollowing:
+        FollowUser = User.objects.get(id=user_id)
+
+        # Get second order neighbours
+        for seconduser in serializer.get_following(FollowUser):
+            if seconduser == ToUser.id:
+                SecondOrder.append(FollowUser)
+
+    SecondOrder = list(set(SecondOrder))
+    return SecondOrder

@@ -19,7 +19,7 @@ from datetime import date, datetime
 
 from network.serializers.serializer import LikeSerializer, UserSerializer
 from .models import User, Post, UserFollowing, SearchHistory, Like, Comment
-from .recommend import Recommend
+from .recommend import GetMutualFollowers, Recommend
 
 class NewPostForm(forms.Form):
     image = forms.ImageField(required=False, widget=forms.FileInput(attrs={'id': 'newPostFormImage'}))
@@ -61,6 +61,13 @@ def index(request, following=None):
         "MutualList": MutualList,
     })
 
+def MutualFollowers(request, user_id):
+    if request.method == "GET":
+        FromUser = User.objects.get(id=request.user.id)
+        ToUser = User.objects.get(id=user_id)
+        mutual = GetMutualFollowers(FromUser, ToUser)
+        print(mutual)
+        return JsonResponse([UserSerializer(user).data for user in mutual], safe=False)
 
 @login_required(login_url="login")
 def createPost(request):
@@ -136,11 +143,11 @@ def toggleLike(request, post_id):
 #Common likes on a post
 
 
-def MutualFollowerCount(FromUser, ToUser):
+def MutualFollowerCount(FromUser, user_id):
     Count = 0
     for record in FromUser.following.all():
         try:
-            UserFollowing.objects.get(user_id=record.following_user_id, following_user_id=ToUser)
+            UserFollowing.objects.get(user_id=record.following_user_id, following_user_id=user_id)
             Count += 1
         except ObjectDoesNotExist:
             pass

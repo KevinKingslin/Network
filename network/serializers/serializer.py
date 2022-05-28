@@ -41,6 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "following",
             "followers",
+            "profilePicture"
         )
         extra_kwargs = {"password": {"write_only": True}}
 
