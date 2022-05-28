@@ -176,7 +176,7 @@
                         <!-- More Comments -->
                         {% if CommentCount > 1 %}
                             <hr>
-                            <a href="#!" class="text-dark" data-toggle="modal" data-target="#exampleModalCenter">View More comments <span class="font-weight-bold">({{ CommentCount|add:"-1" }})</span></a>
+                            <a href="#!" onclick="GetComments('{{ post.id }}')" class="text-dark" data-toggle="modal" data-target="#exampleModalCenter">View More comments <span class="font-weight-bold">({{ CommentCount|add:"-1" }})</span></a>
                         {% endif %}
                     </div>
                 </div>
@@ -190,7 +190,7 @@
     </div>
 
     <div id="exampleModalCenter" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div id="complete-modal" class="modal-dialog modal-dialog-centered modal-sm">
           <div class="modal-content">
             <div class="modal-header">
                 <h5 id="modal-title" class="modal-title" id="exampleModalLongTitle"></h5>

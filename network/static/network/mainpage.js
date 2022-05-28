@@ -107,12 +107,13 @@ function CreateNewComment(NewCommentForm, post_id){
 }
 
 function CreateUserList(header, data){
+    document.querySelector('#complete-modal').className = "modal-dialog modal-dialog-centered modal-sm"
+
     title = document.getElementById('modal-title')
     title.innerHTML = header
     
     body = document.getElementById('modal-body')
     body.innerHTML = ''
-
 
     data.forEach(user => {
             container = document.createElement('div')
@@ -134,11 +135,25 @@ function CreateUserList(header, data){
             UserName.setAttribute('href', `u/${user.id}`);
             UserName.className = 'mb-0 text-dark'
             UserName.innerHTML = `${user.username}`
-
+            
             UserDetailsContainer.appendChild(UserName)
+            
+            if(header == "Comments"){
+                document.querySelector('#complete-modal').className = "modal-dialog modal-dialog-centered modal-lg"
 
+                Timestamp = document.createElement('small')
+                Timestamp.innerHTML = `${user.created}`
+                Timestamp.className = 'text-muted'
+                UserDetailsContainer.appendChild(Timestamp)
+
+                Description = document.createElement('p')
+                Description.innerHTML = `${user.description}`
+                Description.className = 'mb-0 text-dark'
+                UserDetailsContainer.appendChild(Description)
+            }
+            
             container.appendChild(UserImage)
-            container.appendChild(UserName)
+            container.appendChild(UserDetailsContainer)
             body.appendChild(container)
         }
     )
@@ -161,5 +176,15 @@ function GetLikes(PostID){
     .then(response => response.json())
     .then(data => {
         CreateUserList("Likes", data)
+    })
+}
+
+function GetComments(PostID){
+    fetch(`posts/comments/${PostID}`,{
+        "method": 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        CreateUserList("Comments", data)
     })
 }

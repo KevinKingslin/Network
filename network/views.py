@@ -17,7 +17,7 @@ import json
 import random
 from datetime import date, datetime
 
-from network.serializers.serializer import LikeSerializer, UserSerializer
+from network.serializers.serializer import LikeSerializer, UserSerializer, CommentSerializer
 from .models import User, Post, UserFollowing, SearchHistory, Like, Comment
 from .recommend import GetMutualFollowers, Recommend
 
@@ -72,13 +72,24 @@ def MutualFollowers(request, user_id):
 def AllLikes(request, post_id):
     if request.method == "GET":
         serializer = LikeSerializer()
-        FromUser = User.objects.get(id=request.user.id)
         post = Post.objects.get(id=post_id)
         data = serializer.get_likes(post)
         likes = []
         for user in data:
             likes.append(User.objects.get(id=user))
         return JsonResponse([UserSerializer(user).data for user in likes], safe=False)
+
+def AllComments(request, post_id):
+    if request.method == "GET":
+        data = Comment.objects.filter(post_id=post_id)
+        serializer = CommentSerializer
+        comments = []
+        for comment in data:
+            CommentDetails = serializer(comment).data
+            CommentDetails['profilePicture'] = comment.user_id.profilePicture.url
+            CommentDetails['username'] = comment.user_id.username
+            comments.append(CommentDetails)
+        return JsonResponse(comments, safe=False)
 
 @login_required(login_url="login")
 def createPost(request):
