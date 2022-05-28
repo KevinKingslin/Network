@@ -69,6 +69,17 @@ def MutualFollowers(request, user_id):
         print(mutual)
         return JsonResponse([UserSerializer(user).data for user in mutual], safe=False)
 
+def AllLikes(request, post_id):
+    if request.method == "GET":
+        serializer = LikeSerializer()
+        FromUser = User.objects.get(id=request.user.id)
+        post = Post.objects.get(id=post_id)
+        data = serializer.get_likes(post)
+        likes = []
+        for user in data:
+            likes.append(User.objects.get(id=user))
+        return JsonResponse([UserSerializer(user).data for user in likes], safe=False)
+
 @login_required(login_url="login")
 def createPost(request):
     if request.method == "POST":

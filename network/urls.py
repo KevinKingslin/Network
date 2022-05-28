@@ -18,4 +18,5 @@ urlpatterns = [
     path("posts/createcomment/<int:post_id>", views.CreateComment, name="CreateComment"),
     path("u/<int:user_id>/toggleFollow", views.toggleFollow, name="toggleFollow"),
     path("u/<int:user_id>/Mutual", views.MutualFollowers, name="Mutual"),
+    path("posts/likes/<int:post_id>", views.AllLikes, name="AllLikes"),
 ]

@@ -106,7 +106,7 @@ function CreateNewComment(NewCommentForm, post_id){
     comment.value=""
 }
 
-function CreateList(header, data){
+function CreateUserList(header, data){
     title = document.getElementById('modal-title')
     title.innerHTML = header
     
@@ -115,7 +115,6 @@ function CreateList(header, data){
 
 
     data.forEach(user => {
-        console.log(user)
             container = document.createElement('div')
             container.className = 'mb-3 post-block'
 
@@ -145,12 +144,22 @@ function CreateList(header, data){
     )
 }
 
-function GetMutual(FromUserID, ToUserID){
+function GetMutual(ToUserID){
     fetch(`u/${ToUserID}/Mutual`,{
         "method": 'GET'
     })
     .then(response => response.json())
     .then(data => {
-        CreateList("Followers", data)
+        CreateUserList("Followers", data)
+    })
+}
+
+function GetLikes(PostID){
+    fetch(`posts/likes/${PostID}`,{
+        "method": 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        CreateUserList("Likes", data)
     })
 }

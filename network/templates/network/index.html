@@ -90,7 +90,7 @@
                         <a href="{% url 'profile' user.id %}"><img draggable="false" src="{{ user.profilePicture.url }}" alt="profile picture" class="author-img" style="float: left; margin-right: 20px;"></a>
                         <div style="margin-left: 70px;">
                             <p class="mb-0"><a href="{% url 'profile' user.id %}" class="text-dark">{{ user.username }}</a></p>
-                            <p>Followed by <a href="#" class="text-dark" onclick="GetMutual('{{ request.user.id }}', '{{ user.id }}')" data-toggle="modal" data-target="#exampleModalCenter">{{ MutualList|get_value:user }} people</a></p>
+                            <p>Followed by <a href="#" class="text-dark" onclick="GetMutual('{{ user.id }}')" data-toggle="modal" data-target="#exampleModalCenter">{{ MutualList|get_value:user }} people</a></p>
                         </div>
                         <hr>
                     </div>
@@ -141,7 +141,7 @@
                                 {% endif %}
                                 <!-- <a href="#!" class="text-danger mr-2"><span><i class="fa fa-heart"></i></span></a> 
                                 <a href="#!" class="text-dark mr-2"><span>Comment</span></a> -->
-                                <p class="mb-0">Liked by <a href="#" class="text-muted font-weight-bold" data-toggle="modal" data-target="#exampleModalCenter"><span id="likeCount-{{post.id}}">{{ post.likes}}</span> people</a></p>
+                                <p class="mb-0">Liked by <a href="#" onclick="GetLikes('{{ post.id }}')" class="text-muted font-weight-bold" data-toggle="modal" data-target="#exampleModalCenter"><span id="likeCount-{{post.id}}">{{ post.likes}}</span> people</a></p>
                             </div>
                         </div>
                     </div>
@@ -169,10 +169,6 @@
                                     <div>
                                         <h6 class="mb-1"><a href="{% url 'profile' comment.user_id.id %}" class="text-dark">{{ comment.user_id.username }}</a> <small class="text-muted">{{ comment.created }}</small></h6>
                                         <p class="mb-1">{{ comment.description }}</p>
-                                        <div class="d-flex">
-                                            <a href="#!" class="text-dark mr-2"><span><i class="fa fa-heart-o"></i></span></a>
-                                            <a href="#!" class="text-dark mr-2"><span>Reply</span></a>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -205,7 +201,7 @@
               <div class="container">
                   <div class="row">
                       <div class="col-sm">
-                          <div id="modal-body">
+                          <div id="modal-body" style="height: auto; max-height: 400px; overflow: auto">
   
                           </div>
                       </div>
