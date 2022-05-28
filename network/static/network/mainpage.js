@@ -5,7 +5,7 @@ fullHeart = '<svg style="color: red; pointer-events: none;" xmlns="http://www.w3
 function toggleLike(likeButton){
     if (likeButton.dataset.like == "true"){
         likeButton.dataset.like = false
-        likeCount = document.querySelector(`#likeCount-${likeButton.id}`)
+        likeCount = document.getElementById(`likeCount-${likeButton.id}`)
         fetch(`/posts/toggleLike/${likeButton.id}`, {
             "method": "PUT",
             "body": JSON.stringify({
@@ -13,7 +13,8 @@ function toggleLike(likeButton){
             })
         })
         likeCount.innerHTML = `${parseInt(likeCount.innerHTML)-1}`
-        likeButton.innerHTML = hollowHeart
+        likeIcon = document.getElementById(`likeIcon-${likeButton.id}`)
+        likeIcon.className = "fa-regular fa-heart fa-xl"
     }
     else if(likeButton.dataset.like == 'false'){
         likeButton.dataset.like = true
@@ -25,7 +26,9 @@ function toggleLike(likeButton){
             })
         })
         likeCount.innerHTML = `${parseInt(likeCount.innerHTML)+1}`
-        likeButton.innerHTML = fullHeart
+        likeIcon = document.getElementById(`likeIcon-${likeButton.id}`)
+        likeIcon.className = "fa-solid fa-heart fa-beat fa-xl"
+        likeIcon.style.cssText = "--fa-animation-iteration-count: 1; --fa-animation-duration: 0.4s; color: red"
     }
 }
 
@@ -88,4 +91,100 @@ function editPost(editForm, post_id){
     })
     document.querySelector(`#postDescription-${post_id}`).innerHTML = editForm.editArea.value
     closeEdit(post_id)
+}
+
+function CreateNewComment(NewCommentForm, post_id){
+    event.preventDefault()
+    comment = document.getElementById(`NewComment-${post_id}`)
+    fetch(`posts/createcomment/${post_id}`,{
+        "method": 'POST',
+        "body": JSON.stringify({
+            "post_id": post_id,
+            "comment": comment.value
+        })
+    })
+    comment.value=""
+}
+
+function CreateUserList(header, data){
+    document.querySelector('#complete-modal').className = "modal-dialog modal-dialog-centered modal-sm"
+
+    title = document.getElementById('modal-title')
+    title.innerHTML = header
+    
+    body = document.getElementById('modal-body')
+    body.innerHTML = ''
+
+    data.forEach(user => {
+            container = document.createElement('div')
+            container.className = 'mb-3 post-block'
+
+            UserImage = document.createElement('a')
+            UserImage.setAttribute('href', `u/${user.id}`);
+
+            var img = document.createElement('img');
+            img.className = 'author-img modal-image'
+            img.src = `${user.profilePicture}`;
+            img.setAttribute('draggable', false)
+
+            UserImage.appendChild(img)
+
+            UserDetailsContainer = document.createElement('div')
+
+            UserName = document.createElement('a')
+            UserName.setAttribute('href', `u/${user.id}`);
+            UserName.className = 'mb-0 text-dark'
+            UserName.innerHTML = `${user.username}`
+            
+            UserDetailsContainer.appendChild(UserName)
+            
+            if(header == "Comments"){
+                document.querySelector('#complete-modal').className = "modal-dialog modal-dialog-centered modal-lg"
+
+                Timestamp = document.createElement('small')
+                Timestamp.innerHTML = `${user.created}`
+                Timestamp.className = 'text-muted'
+                UserDetailsContainer.appendChild(Timestamp)
+
+                Description = document.createElement('p')
+                Description.innerHTML = `${user.description}`
+                Description.className = 'mb-0 text-dark'
+                UserDetailsContainer.appendChild(Description)
+            }
+            
+            container.appendChild(UserImage)
+            container.appendChild(UserDetailsContainer)
+            body.appendChild(container)
+        }
+    )
+}
+
+function GetMutual(ToUserID){
+    fetch(`u/${ToUserID}/Mutual`,{
+        "method": 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        CreateUserList("Followers", data)
+    })
+}
+
+function GetLikes(PostID){
+    fetch(`posts/likes/${PostID}`,{
+        "method": 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        CreateUserList("Likes", data)
+    })
+}
+
+function GetComments(PostID){
+    fetch(`posts/comments/${PostID}`,{
+        "method": 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        CreateUserList("Comments", data)
+    })
 }

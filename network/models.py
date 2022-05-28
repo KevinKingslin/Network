@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from network.templatetags.getdictvalue import timestamp
+
 class User(AbstractUser):
     profilePicture = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
     followerCount = models.IntegerField(default=0)
@@ -53,7 +55,10 @@ class Like(models.Model):
         return f"{self.user_id} liked {self.post_id}"
 
 class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
-    time = models.DateTimeField(auto_now_add = True, editable=False)
+    created = models.DateTimeField(auto_now_add = True, editable=False)
+
+    class Meta: 
+        ordering = ["-created"]

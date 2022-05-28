@@ -4,36 +4,71 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Network</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>friend.ly</title>
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/4327753726.js" crossorigin="anonymous"></script>
     
     <!-- CSS Stylesheets -->
     <link href="{% static 'network/styles.css' %}" rel="stylesheet">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@1,300&display=swap" rel="stylesheet">
+    <link href="{% static 'network/post.css' %}" rel="stylesheet">
 
     <script src="{% static 'network/mainpage.js' %}"></script>
     
   </head>
   <body>
     <div style="text-align:left">
-      <div>
-        <nav class="navbar-light fixed-top bg-light" style="text-align:center;width:100vw;z-index:0">
-            <a href="{% url 'index' %}" style="text-decoration:none;color:black">
-              <span id="logo">N E T W O R K</span>
-            </a>
-        </nav>
-      </div>
-      
+      <nav class="navbar-light fixed-top" style="text-align:center;width:100vw;z-index:10; background-color: #fbe399">
+        {% if user.is_authenticated %}
+          <a href="{% url 'index' %}" style="text-decoration:none;color:black; float: left; margin-left: 6%;">
+            <img draggable="false" id="logo" src="{% static 'network/logo.png' %}" style="width: 200px;">
+          </a>
+        {% else %}
+          <a href="{% url 'index' %}" style="text-decoration:none;color:black; margin-left: 70px;">
+            <img draggable="false" id="logo" src="{% static 'network/logo.png' %}" style="width: 200px;">
+          </a>
+        {% endif %}
+          <!-- <fieldset class="field-container"> -->
+          {% if user.is_authenticated %}
+            <input type="text" placeholder="Search..." class="field" />
+            <!-- <div class="icons-container">
+              <div class="icon-search"></div>
+              <div class="icon-close">
+                <div class="x-up"></div>
+                <div class="x-down"></div>
+              </div>
+            </div>
+          </fieldset> -->
+            <div id="UserOptions" style="display: inline; float: right; margin-right: 30px;">
+              <div id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: right; cursor: pointer;">
+                <img src="{{ request.user.profilePicture.url }}" style="width: 40px; border-radius: 40px;">
+              </div>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId" style="float: right;">
+                  <a class="dropdown-item text-dark" href="{% url 'profile' request.user.id %}"><i class="fa fa-pencil mr-1"></i>Profile</a>
+                  <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fa fa-arrow-right-from-bracket mr-1"></i>Log Out</a>
+              </div>
+              <button  class="likeButton" style="float: right">
+                <i class="fa-regular fa-bell fa-2xl"></i>
+              </button>
+              <button class="likeButton" style="float: right">
+                <i class="fa-regular fa-square-plus fa-2xl" aria-hidden="true"></i>
+              </button>
+            </div>
+          {% endif %}
+
+      </nav>
+    
       <div class="body">
           {% block body %}
           {% endblock %}
       </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   </body>
 </html>

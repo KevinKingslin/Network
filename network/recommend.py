@@ -34,10 +34,11 @@ def Recommend(fromUser):
         score = influence[user] + likes[user] + mutual[user]
         if user in history:
             score += 0.4
+        user = User.objects.get(id=user)
         ReccomendList[user] = score
     
     ReccomendList = sorted(ReccomendList, key=ReccomendList.get, reverse=True)
-    return ReccomendList
+    return ReccomendList[0:4]
 
     #weights = {"mutual-friends": 1, "history": 0.5, "influence": 0.75, "commonlikes": 0.8}
 
@@ -103,6 +104,23 @@ def GenerateCandidates(fromUser):
         for seconduser in serializer.get_following(FollowUser):
             if seconduser not in FirstOrderFollowing and seconduser != fromUser.id:
                 SecondOrder.append(seconduser)
+
+    SecondOrder = list(set(SecondOrder))
+    return SecondOrder
+
+def GetMutualFollowers(FromUser, ToUser):
+    serializer = UserSerializer()
+    FirstOrderFollowing, AllEdges = GetDegreeData(FromUser)
+    SecondOrder = []
+
+    # Get first order neighbours
+    for user_id in FirstOrderFollowing:
+        FollowUser = User.objects.get(id=user_id)
+
+        # Get second order neighbours
+        for seconduser in serializer.get_following(FollowUser):
+            if seconduser == ToUser.id:
+                SecondOrder.append(FollowUser)
 
     SecondOrder = list(set(SecondOrder))
     return SecondOrder

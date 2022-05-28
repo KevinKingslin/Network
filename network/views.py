@@ -14,9 +14,12 @@ from django import forms
 from django.core.paginator import Paginator
 from itertools import chain
 import json
+import random
 from datetime import date, datetime
-from .models import User, Post, UserFollowing, SearchHistory, Like
-from .recommend import Recommend
+
+from network.serializers.serializer import LikeSerializer, UserSerializer, CommentSerializer
+from .models import User, Post, UserFollowing, SearchHistory, Like, Comment
+from .recommend import GetMutualFollowers, Recommend
 
 class NewPostForm(forms.Form):
     image = forms.ImageField(required=False, widget=forms.FileInput(attrs={'id': 'newPostFormImage'}))
@@ -24,34 +27,69 @@ class NewPostForm(forms.Form):
 
 @login_required(login_url="login")
 def index(request, following=None):
-    likeList = []
-    try:
-        user = User.objects.get(id=request.user.id)
-    except:
-        return JsonResponse({"error": "Incorrect credentials."}, status=404)
+    serializer = UserSerializer()
 
-    if following == None:
-        posts = list(Post.objects.all().order_by('-timestamp'))
-    # elif following == "following":
-    #     posts = [Post.objects.filter(creator=users) for users in user.followings.all()]
-    #     posts = list(chain(*posts))
-    #     posts.sort(key=lambda x: x.timestamp, reverse=True)
+    likeserializer = LikeSerializer()
+    FromUser = User.objects.get(id=request.user.id)
+    FollowingList = serializer.get_following(FromUser)
 
-    for result in user.likedBy.all():
-        likeList.append(result.id)
-
-    paginator = Paginator(posts, 10)
+    PostData = []
+    posts = list(Post.objects.filter(creator__in=FollowingList).order_by('-timestamp'))
+    for post in posts:
+        LikeUser = []
+        likes = likeserializer.get_likes(post)
+        for user in likes:
+            LikeUser.append(User.objects.get(id=user))
+        comments = Comment.objects.filter(post_id=post)
+        PostData.append((post, LikeUser, comments.first(), comments.count()))
+    
+    paginator = Paginator(PostData, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    RecommendList = Recommend(FromUser)
+    MutualList = {}
+    for user in RecommendList:
+        MutualList[user] = MutualFollowerCount(FromUser, user)
+
     return render(request, "network/index.html", {
         "newpostform": NewPostForm(),
-        "username": request.user.username,
         "posts": page_obj,
         "postCount": len(posts),
-        "likes": likeList
+        "RecommendList": RecommendList,
+        "RecommendListCount": len(RecommendList),
+        "MutualList": MutualList,
     })
 
+def MutualFollowers(request, user_id):
+    if request.method == "GET":
+        FromUser = User.objects.get(id=request.user.id)
+        ToUser = User.objects.get(id=user_id)
+        mutual = GetMutualFollowers(FromUser, ToUser)
+        print(mutual)
+        return JsonResponse([UserSerializer(user).data for user in mutual], safe=False)
+
+def AllLikes(request, post_id):
+    if request.method == "GET":
+        serializer = LikeSerializer()
+        post = Post.objects.get(id=post_id)
+        data = serializer.get_likes(post)
+        likes = []
+        for user in data:
+            likes.append(User.objects.get(id=user))
+        return JsonResponse([UserSerializer(user).data for user in likes], safe=False)
+
+def AllComments(request, post_id):
+    if request.method == "GET":
+        data = Comment.objects.filter(post_id=post_id)
+        serializer = CommentSerializer
+        comments = []
+        for comment in data:
+            CommentDetails = serializer(comment).data
+            CommentDetails['profilePicture'] = comment.user_id.profilePicture.url
+            CommentDetails['username'] = comment.user_id.username
+            comments.append(CommentDetails)
+        return JsonResponse(comments, safe=False)
 
 @login_required(login_url="login")
 def createPost(request):
@@ -69,6 +107,15 @@ def createPost(request):
             return HttpResponseRedirect(reverse("index"))
     elif request.method == "PUT":
         pass
+
+@csrf_exempt
+def CreateComment(request, post_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        post = Post.objects.get(id=post_id)
+        comment = Comment.objects.create(user_id=request.user, post_id=post, description=data.get('comment'))
+        comment.save()
+        return HttpResponse(status=200)
 
 
 @csrf_exempt
@@ -95,10 +142,12 @@ def toggleLike(request, post_id):
         data = json.loads(request.body)
         if data.get("liked") is not None:
             if data["liked"] == "true":
-                post.likedBy.add(user)
+                like = Like.objects.create(user_id=user, post_id=post)
+                like.save()
                 post.likes += 1
             elif data["liked"] == "false":
-                post.likedBy.remove(user)
+                like = Like.objects.get(user_id=user, post_id=post)
+                like.delete()
                 post.likes -= 1
             post.save()
             return HttpResponse(status=202)
@@ -115,6 +164,16 @@ def toggleLike(request, post_id):
 #page rank - idk
 #Common likes on a post
 
+
+def MutualFollowerCount(FromUser, user_id):
+    Count = 0
+    for record in FromUser.following.all():
+        try:
+            UserFollowing.objects.get(user_id=record.following_user_id, following_user_id=user_id)
+            Count += 1
+        except ObjectDoesNotExist:
+            pass
+    return Count
 
 def profile(request, user_id):
     if request.method == "GET":
@@ -138,16 +197,8 @@ def profile(request, user_id):
         except ObjectDoesNotExist: 
             following = False
 
-        Recommend(fromUser)
-
-        mutualFollowerCount = 0
-        for record in fromUser.following.all():
-            try:
-                UserFollowing.objects.get(user_id=record.following_user_id, following_user_id=toUser)
-                mutualFollowerCount += 1
-            except ObjectDoesNotExist:
-                pass
-
+        mutualFollowerCount = MutualFollowerCount(fromUser, toUser)
+        
         for result in fromUser.likedBy.all():
             likeList.append(result.id)
 
@@ -212,7 +263,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("login"))
 
 
 def register(request):

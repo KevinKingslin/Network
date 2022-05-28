@@ -1,15 +1,11 @@
 .body {
     margin: auto;
-    background-color: #fafafa; 
+    background-color: #f1eee9;
+    font-family: "Roboto", sans-serif;
     width: 100%; 
     padding-top: 70px; 
     padding-left: 30px; 
     padding-right: 30px;
-}
-
-#logo {
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size:xx-large;
 }
 
 .newPostFormContainer {
@@ -24,40 +20,16 @@
     padding: 5px;
 }
 
-.postContainer {
-    border: solid 1px; 
-    border-color: grey;
-    width: 40vw; 
-    margin-left: auto; 
-    margin-right: auto; 
-    margin-top:vh; 
-    margin-bottom: 2vh; 
-    border-radius: 1%; 
-    display: flexbox;
-}
-
 .profilePicture {
     border-radius: 50%; 
     width: 35px; 
     height: 35px;
 }
 
-#postImageContainer {
-    width: 100%; 
-    height: 100%;
-}
-
 .postImage{
     display: inline-block;
     width: 100%; 
     height: 100%;
-}
-
-.likeButton {
-    padding: 0;
-    border: none;
-    background: none; 
-    padding-left: 10px;
 }
 
 .postDescription {
@@ -135,4 +107,52 @@ main
 main img
 {
     max-width: 100%;
+}
+
+
+
+.field-container {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    width: 330px;
+    height: 40px;
+}
+
+.field {
+    border: 0;
+    width: 400px;
+    height: 100%;
+    margin-top: 8px;
+    padding: 10px 20px;
+    background: white;
+    border-radius: 3px;
+    box-shadow: 0px 8px 15px rgba(75, 72, 72, 0.1);
+    transition: all 0.4s ease;
+}
+.field:focus {
+    outline: none;
+    box-shadow: 0px 9px 20px rgba(75, 72, 72, 0.3);
+}
+.field:focus + .icons-container .icon-close {
+    opacity: 1;
+    transform: translateX(0);
+}
+.field:focus + .icons-container .icon-search {
+    opacity: 0;
+    transform: translateX(200%);
+}
+
+#ymk {
+    position: fixed;
+}
+
+#posts {
+    margin-left: 35%;
+}
+
+.modal-image {
+    float: left; 
+    margin-right: 20px;
 }

@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from network.models import Like, UserFollowing, SearchHistory
+from network.models import Like, Post, UserFollowing, Comment, SearchHistory
 from rest_framework import serializers
 
 User = get_user_model()
@@ -20,16 +20,23 @@ class HistorySerializer(serializers.ModelSerializer):
         model = SearchHistory
         fields = ("id", "searched_user_id", "created")
 
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ("id", "user_id","description", "post_id", "created")
+
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Like
+        model = Post
         fields = ("id", "user_id", "post_id")
+
+    def get_likes(self, obj):
+        return list(obj.post.values_list('user_id', flat=True))
 
 class UserSerializer(serializers.ModelSerializer):
 
     following = serializers.SerializerMethodField()
     followers = serializers.SerializerMethodField()
-    searchhistory = serializers.SerializerMethodField()
     
     class Meta:
         model = User
@@ -39,7 +46,7 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "following",
             "followers",
-            "searchhistory",
+            "profilePicture"
         )
         extra_kwargs = {"password": {"write_only": True}}
 
