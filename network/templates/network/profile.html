@@ -25,7 +25,9 @@
                 <span class="profileFollowers"><a href="#" class="text-dark" onclick="GetFollowing('{{ user.id }}')" data-toggle="modal" data-target="#exampleModalCenter">Following: {{ user.followingCount }}</a></span>
             </p> 
         </div>
-        <p class="profileFollowers">Followed by <a href="#" class="text-dark" onclick="GetMutual('{{ user.id }}')" data-toggle="modal" data-target="#exampleModalCenter">{{ mutualFollowerCount }} people</a></p>
+        {% if request.user.id != user.id %}
+            <p class="profileFollowers">Followed by <a href="#" class="text-dark" onclick="GetMutual('{{ user.id }}')" data-toggle="modal" data-target="#exampleModalCenter">{{ mutualFollowerCount }} people</a></p>
+        {% endif %}
 
     </div>
     <hr>

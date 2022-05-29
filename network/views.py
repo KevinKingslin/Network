@@ -35,7 +35,12 @@ def index(request, following=None):
     FollowingList = serializer.get_following(FromUser)
 
     PostData = []
-    posts = list(Post.objects.filter(creator__in=FollowingList).order_by('-timestamp'))
+    if len(FollowingList) != 0:
+        posts = list(Post.objects.filter(creator__in=FollowingList).order_by('-timestamp'))
+    else:
+        items = list(Post.objects.all())
+        posts = random.sample(items, 10)
+
     for post in posts:
         LikeUser = []
         likes = likeserializer.get_likes(post)
