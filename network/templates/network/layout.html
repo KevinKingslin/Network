@@ -33,14 +33,16 @@
           </a>
         {% endif %}
           {% if user.is_authenticated %}
-            <input type="text" placeholder="Search..." class="field" />
-            
+            <form onsubmit="SearchUser()" style="display: inline;">
+              <input id="search-bar" type="text" placeholder="Search..." class="field" />
+              <button class="btn btn-primary" type="submit" id="button-addon2" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
             <div id="UserOptions" style="display: inline; float: right; margin-right: 30px; margin-bottom: 10px; vertical-align: middle; margin-top: 5px;">
               <div id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: right; cursor: pointer; margin-left: 10px;">
                 <img src="{{ request.user.profilePicture.url }}" style="width: 40px; border-radius: 40px">
               </div>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId" style="float: right; margin-left: 10px;">
-                  <a class="dropdown-item text-dark" href='#'><i class="fa fa-pencil mr-1"></i>Profile</a>
+                  <a class="dropdown-item text-dark" href="{% url 'profile' request.user.id %}"><i class="fa fa-pencil mr-1"></i>Profile</a>
                   <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fa fa-arrow-right-from-bracket mr-1"></i>Log Out</a>
               </div>
               <button class="likeButton" style="float: right; margin-left: 10px;">

@@ -222,22 +222,69 @@ function CreateForm(header){
     container.style.height = "100%"
 
     form = document.createElement("form");
-    form.setAttribute('onsubmit',CreateNewPost());
+    form.setAttribute('onsubmit','CreateNewPost(this)');
+    form.setAttribute('enctype', 'multipart/form-data')
+    // form.method = 'POST'
+    // form.action = 'createPost'
 
-    input = document.createElement('input')
-    input.placeholder = 'Describe your new post'
-    input.className = 'form-control'
+    label = document.createElement('label')
+    label.for = 'formFile'
+    label.className = 'form-label'
+    label.innerHTML = "Upload"
+    label.style.cssText = "border: 1px solid #ccc;display: inline-block;padding: 6px 12px; cursor: pointer;"
+
+    upload = document.createElement('input');
+    upload.id = 'formFile'
+    upload.setAttribute('type','file');
+    upload.name = 'image'
+    upload.className = 'form-control'
+    upload.id = 'new-post-image'
+
+    label.appendChild(upload)
+    
+    image = document.createElement('img')
+    
+    description = document.createElement('input')
+    description.placeholder = 'Describe your new post'
+    description.className = 'form-control'
+    description.id = 'new-post-description'
     
     button = document.createElement('button')
     button.className = 'btn btn-primary'
     button.innerHTML = 'Create new post'
+    button.setAttribute('type', 'submit')
 
-
-    container.appendChild(input)
-    container.appendChild(button)
+    form.appendChild(label)
+    form.appendChild(description)
+    form.appendChild(button)
+    container.appendChild(form)
     body.appendChild(container)
 }
 
-function CreateNewPost(){
+function CreateNewPost(form){
+    event.preventDefault()
+    input = document.getElementById('new-post-image')
+    image = input.files[0];
+    description = document.getElementById('new-post-description').value
 
+    const formData = new FormData()
+    formData.append('image', input.files[0])
+    formData.append('description', description)
+
+    fetch('createPost',{
+        "method": 'POST',
+        "body": formData
+    })
+}
+
+function SearchUser(){
+    event.preventDefault()
+    query = document.querySelector('#search-bar').value
+    fetch(`searchuser/${query}`,{
+        "method": 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        CreateUserList("Search", data)
+    })
 }

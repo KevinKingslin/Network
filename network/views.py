@@ -1,3 +1,4 @@
+from os import stat
 from pydoc import cli
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -107,22 +108,16 @@ def AllComments(request, post_id):
             comments.append(CommentDetails)
         return JsonResponse(comments, safe=False)
 
+@csrf_exempt
 @login_required(login_url="login")
 def createPost(request):
     if request.method == "POST":
-        form = NewPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            creator = request.user
-            description = form.cleaned_data["description"]
-            try:
-                image = form.cleaned_data["image"]
-            except:
-                image = None
-            post = Post(creator=creator, description=description, image=image)
-            post.save()
-            return HttpResponseRedirect(reverse("index"))
-    elif request.method == "PUT":
-        pass
+        print(request.FILES)
+        print(request.POST)
+        creator = request.user
+        post = Post.objects.create(creator=creator, description=request.POST.get('description'), image=request.FILES['image'])
+        post.save()
+        return HttpResponse(status=200)
 
 @csrf_exempt
 def CreateComment(request, post_id):
@@ -239,6 +234,10 @@ def profile(request, user_id):
     else:
         return HttpResponse('404')
 
+def SearchUser(request, query):
+    if request.method == "GET":
+        data = User.objects.filter(username__contains=query)[0:4]
+        return JsonResponse([UserSerializer(user).data for user in data], safe=False)
 
 @csrf_exempt
 def toggleFollow(request, user_id):
@@ -304,8 +303,6 @@ def register(request):
                 "message": "Passwords must match."
             })
 
-        # Attempt to create new user
-        # Test
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
