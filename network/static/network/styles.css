@@ -22,8 +22,8 @@
 
 .profilePicture {
     border-radius: 50%; 
-    width: 35px; 
-    height: 35px;
+    width: 120px; 
+    height: 120px;
 }
 
 .postImage{
@@ -48,11 +48,13 @@
     margin-right: auto; 
     margin-left: auto; 
     text-align: center;
+    width: max-content;
 }
 
 #profileUsername {
     text-align: center; 
     font-size: 36px;
+    height: max-content;
 }
 
 .profileFollowers {
@@ -150,6 +152,10 @@ main img
 
 #posts {
     margin-left: 35%;
+}
+
+#profile-posts {
+    margin-left: 25%;
 }
 
 .modal-image {

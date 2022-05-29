@@ -1,3 +1,4 @@
+from os import stat
 from pydoc import cli
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -34,7 +35,12 @@ def index(request, following=None):
     FollowingList = serializer.get_following(FromUser)
 
     PostData = []
-    posts = list(Post.objects.filter(creator__in=FollowingList).order_by('-timestamp'))
+    if len(FollowingList) != 0:
+        posts = list(Post.objects.filter(creator__in=FollowingList).order_by('-timestamp'))
+    else:
+        items = list(Post.objects.all())
+        posts = random.sample(items, 10)
+
     for post in posts:
         LikeUser = []
         likes = likeserializer.get_likes(post)
@@ -61,12 +67,30 @@ def index(request, following=None):
         "MutualList": MutualList,
     })
 
+def Followers(request, user_id):
+    if request.method == "GET":
+        FromUser = User.objects.get(id=request.user.id)
+        ToUser = User.objects.get(id=user_id)
+        serializer = UserSerializer()
+        data = serializer.get_followers(ToUser)
+        data = [User.objects.get(id=user) for user in data]
+        return JsonResponse([UserSerializer(user).data for user in data], safe=False)
+
+def Following(request, user_id):
+    if request.method == "GET":
+        FromUser = User.objects.get(id=request.user.id)
+        ToUser = User.objects.get(id=user_id)
+        serializer = UserSerializer()
+        data = serializer.get_following(ToUser)
+        data = [User.objects.get(id=user) for user in data]
+        print(data)
+        return JsonResponse([UserSerializer(user).data for user in data], safe=False)
+
 def MutualFollowers(request, user_id):
     if request.method == "GET":
         FromUser = User.objects.get(id=request.user.id)
         ToUser = User.objects.get(id=user_id)
         mutual = GetMutualFollowers(FromUser, ToUser)
-        print(mutual)
         return JsonResponse([UserSerializer(user).data for user in mutual], safe=False)
 
 def AllLikes(request, post_id):
@@ -74,9 +98,7 @@ def AllLikes(request, post_id):
         serializer = LikeSerializer()
         post = Post.objects.get(id=post_id)
         data = serializer.get_likes(post)
-        likes = []
-        for user in data:
-            likes.append(User.objects.get(id=user))
+        likes = [User.objects.get(id=user) for user in data]
         return JsonResponse([UserSerializer(user).data for user in likes], safe=False)
 
 def AllComments(request, post_id):
@@ -91,22 +113,16 @@ def AllComments(request, post_id):
             comments.append(CommentDetails)
         return JsonResponse(comments, safe=False)
 
+@csrf_exempt
 @login_required(login_url="login")
 def createPost(request):
     if request.method == "POST":
-        form = NewPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            creator = request.user
-            description = form.cleaned_data["description"]
-            try:
-                image = form.cleaned_data["image"]
-            except:
-                image = None
-            post = Post(creator=creator, description=description, image=image)
-            post.save()
-            return HttpResponseRedirect(reverse("index"))
-    elif request.method == "PUT":
-        pass
+        print(request.FILES)
+        print(request.POST)
+        creator = request.user
+        post = Post.objects.create(creator=creator, description=request.POST.get('description'), image=request.FILES['image'])
+        post.save()
+        return HttpResponse(status=200)
 
 @csrf_exempt
 def CreateComment(request, post_id):
@@ -164,7 +180,6 @@ def toggleLike(request, post_id):
 #page rank - idk
 #Common likes on a post
 
-
 def MutualFollowerCount(FromUser, user_id):
     Count = 0
     for record in FromUser.following.all():
@@ -180,9 +195,11 @@ def profile(request, user_id):
         likeList = []
         fromUser = User.objects.get(id=request.user.id)
         toUser = User.objects.get(id=user_id)
-        posts = Post.objects.filter(creator = toUser).order_by('-timestamp')
-        followerCount = toUser.followerCount
-        followingCount = toUser.followingCount
+        
+        serializer = UserSerializer()
+        likeserializer = LikeSerializer()
+        following = serializer.get_following(toUser)
+        followers = serializer.get_followers(toUser)
 
         if fromUser.id != toUser.id:
             try:
@@ -199,21 +216,33 @@ def profile(request, user_id):
 
         mutualFollowerCount = MutualFollowerCount(fromUser, toUser)
         
+        PostData = []
+        posts = Post.objects.filter(creator = toUser).order_by('-timestamp')
+        for post in posts:
+            LikeUser = []
+            likes = likeserializer.get_likes(post)
+            for user in likes:
+                LikeUser.append(User.objects.get(id=user))
+            comments = Comment.objects.filter(post_id=post)
+            PostData.append((post, LikeUser, comments.first(), comments.count()))
+
         for result in fromUser.likedBy.all():
             likeList.append(result.id)
 
         return render(request, "network/profile.html", {
             "user": toUser,
-            "posts": posts,
+            "posts": PostData,
             "likes": likeList,
             "following": following,
-            "followerCount": followerCount,
-            "followingCount": followingCount,
             "mutualFollowerCount": mutualFollowerCount
         })
     else:
         return HttpResponse('404')
 
+def SearchUser(request, query):
+    if request.method == "GET":
+        data = User.objects.filter(username__contains=query)[0:4]
+        return JsonResponse([UserSerializer(user).data for user in data], safe=False)
 
 @csrf_exempt
 def toggleFollow(request, user_id):
@@ -279,8 +308,6 @@ def register(request):
                 "message": "Passwords must match."
             })
 
-        # Attempt to create new user
-        # Test
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
