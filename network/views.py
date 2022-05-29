@@ -37,6 +37,7 @@ def index(request, following=None):
     PostData = []
     if len(FollowingList) != 0:
         posts = list(Post.objects.filter(creator__in=FollowingList).order_by('-timestamp'))
+        posts = random.sample(posts, len(posts))
     else:
         items = list(Post.objects.all())
         posts = random.sample(items, 10)

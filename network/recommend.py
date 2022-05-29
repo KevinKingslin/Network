@@ -70,7 +70,10 @@ def RankCommonLikes(fromUser, Candidates):
     for user in Candidates:
         clikes = set(serializer.get_likes(User.objects.get(id=user)))
 
-        jaccard_index = len(likes & clikes) / len(likes | clikes)
+        try:
+            jaccard_index = len(likes & clikes) / len(likes | clikes)
+        except:
+            jaccard_index = 0
         RecommendList[user] = jaccard_index
     return RecommendList
 
@@ -83,6 +86,7 @@ def RankMutualFollowers(Candidates, FirstOrderFollowing, AllEdges):
     G.add_nodes_from(Candidates)
     G.add_edges_from(AllEdges)
     nx.draw(G, with_labels=True)
+    # plt.show()
 
     RecommendList = {}
     for node in Candidates:

@@ -92,7 +92,7 @@ function editPost(editForm, post_id){
 function CreateNewComment(NewCommentForm, post_id){
     event.preventDefault()
     comment = document.getElementById(`NewComment-${post_id}`)
-    fetch(`posts/createcomment/${post_id}`,{
+    fetch(`/posts/createcomment/${post_id}`,{
         "method": 'POST',
         "body": JSON.stringify({
             "post_id": post_id,
@@ -157,7 +157,7 @@ function CreateUserList(header, data){
 }
 
 function GetMutual(ToUserID){
-    fetch(`${ToUserID}/Mutual`,{
+    fetch(`http://localhost:8000/u/${ToUserID}/Mutual`,{
         "method": 'GET'
     })
     .then(response => response.json())
@@ -167,7 +167,7 @@ function GetMutual(ToUserID){
 }
 
 function GetLikes(PostID){
-    fetch(`posts/likes/${PostID}`,{
+    fetch(`http://localhost:8000/posts/likes/${PostID}`,{
         "method": 'GET'
     })
     .then(response => response.json())
@@ -177,7 +177,7 @@ function GetLikes(PostID){
 }
 
 function GetComments(PostID){
-    fetch(`posts/comments/${PostID}`,{
+    fetch(`http://localhost:8000/posts/comments/${PostID}`,{
         "method": 'GET'
     })
     .then(response => response.json())
