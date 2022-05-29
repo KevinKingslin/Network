@@ -1,10 +1,11 @@
+from email.policy import default
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from network.templatetags.getdictvalue import timestamp
 
 class User(AbstractUser):
-    profilePicture = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
+    profilePicture = models.ImageField(upload_to='profilePictures/', default="profilePictures/default.png",null=True, blank=True)
     followerCount = models.IntegerField(default=0)
     followingCount = models.IntegerField(default=0)
 

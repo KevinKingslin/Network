@@ -32,29 +32,21 @@
             <img draggable="false" id="logo" src="{% static 'network/logo.png' %}" style="width: 200px;">
           </a>
         {% endif %}
-          <!-- <fieldset class="field-container"> -->
           {% if user.is_authenticated %}
             <input type="text" placeholder="Search..." class="field" />
-            <!-- <div class="icons-container">
-              <div class="icon-search"></div>
-              <div class="icon-close">
-                <div class="x-up"></div>
-                <div class="x-down"></div>
+            
+            <div id="UserOptions" style="display: inline; float: right; margin-right: 30px; margin-bottom: 10px; vertical-align: middle; margin-top: 5px;">
+              <div id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: right; cursor: pointer; margin-left: 10px;">
+                <img src="{{ request.user.profilePicture.url }}" style="width: 40px; border-radius: 40px">
               </div>
-            </div>
-          </fieldset> -->
-            <div id="UserOptions" style="display: inline; float: right; margin-right: 30px;">
-              <div id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: right; cursor: pointer;">
-                <img src="{{ request.user.profilePicture.url }}" style="width: 40px; border-radius: 40px;">
-              </div>
-              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId" style="float: right;">
-                  <a class="dropdown-item text-dark" href="{% url 'profile' request.user.id %}"><i class="fa fa-pencil mr-1"></i>Profile</a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId" style="float: right; margin-left: 10px;">
+                  <a class="dropdown-item text-dark" href='#'><i class="fa fa-pencil mr-1"></i>Profile</a>
                   <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fa fa-arrow-right-from-bracket mr-1"></i>Log Out</a>
               </div>
-              <button  class="likeButton" style="float: right">
+              <button class="likeButton" style="float: right; margin-left: 10px;">
                 <i class="fa-regular fa-bell fa-2xl"></i>
               </button>
-              <button class="likeButton" style="float: right">
+              <button onclick="CreateForm('Create New Post')" data-toggle="modal" data-target="#exampleModalCenter" class="likeButton" style="float: right">
                 <i class="fa-regular fa-square-plus fa-2xl" aria-hidden="true"></i>
               </button>
             </div>
@@ -65,6 +57,29 @@
       <div class="body">
           {% block body %}
           {% endblock %}
+
+          <div id="exampleModalCenter" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+            <div id="complete-modal" class="modal-dialog modal-dialog-centered modal-sm">
+              <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="modal-title" class="modal-title" id="exampleModalLongTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="container">
+                      <div class="row">
+                          <div class="col-sm">
+                              <div id="modal-body" style="height: auto; max-height: 400px; overflow: auto">
+      
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+
       </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

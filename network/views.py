@@ -61,12 +61,30 @@ def index(request, following=None):
         "MutualList": MutualList,
     })
 
+def Followers(request, user_id):
+    if request.method == "GET":
+        FromUser = User.objects.get(id=request.user.id)
+        ToUser = User.objects.get(id=user_id)
+        serializer = UserSerializer()
+        data = serializer.get_followers(ToUser)
+        data = [User.objects.get(id=user) for user in data]
+        return JsonResponse([UserSerializer(user).data for user in data], safe=False)
+
+def Following(request, user_id):
+    if request.method == "GET":
+        FromUser = User.objects.get(id=request.user.id)
+        ToUser = User.objects.get(id=user_id)
+        serializer = UserSerializer()
+        data = serializer.get_following(ToUser)
+        data = [User.objects.get(id=user) for user in data]
+        print(data)
+        return JsonResponse([UserSerializer(user).data for user in data], safe=False)
+
 def MutualFollowers(request, user_id):
     if request.method == "GET":
         FromUser = User.objects.get(id=request.user.id)
         ToUser = User.objects.get(id=user_id)
         mutual = GetMutualFollowers(FromUser, ToUser)
-        print(mutual)
         return JsonResponse([UserSerializer(user).data for user in mutual], safe=False)
 
 def AllLikes(request, post_id):
@@ -74,9 +92,7 @@ def AllLikes(request, post_id):
         serializer = LikeSerializer()
         post = Post.objects.get(id=post_id)
         data = serializer.get_likes(post)
-        likes = []
-        for user in data:
-            likes.append(User.objects.get(id=user))
+        likes = [User.objects.get(id=user) for user in data]
         return JsonResponse([UserSerializer(user).data for user in likes], safe=False)
 
 def AllComments(request, post_id):
@@ -164,7 +180,6 @@ def toggleLike(request, post_id):
 #page rank - idk
 #Common likes on a post
 
-
 def MutualFollowerCount(FromUser, user_id):
     Count = 0
     for record in FromUser.following.all():
@@ -180,9 +195,11 @@ def profile(request, user_id):
         likeList = []
         fromUser = User.objects.get(id=request.user.id)
         toUser = User.objects.get(id=user_id)
-        posts = Post.objects.filter(creator = toUser).order_by('-timestamp')
-        followerCount = toUser.followerCount
-        followingCount = toUser.followingCount
+        
+        serializer = UserSerializer()
+        likeserializer = LikeSerializer()
+        following = serializer.get_following(toUser)
+        followers = serializer.get_followers(toUser)
 
         if fromUser.id != toUser.id:
             try:
@@ -199,16 +216,24 @@ def profile(request, user_id):
 
         mutualFollowerCount = MutualFollowerCount(fromUser, toUser)
         
+        PostData = []
+        posts = Post.objects.filter(creator = toUser).order_by('-timestamp')
+        for post in posts:
+            LikeUser = []
+            likes = likeserializer.get_likes(post)
+            for user in likes:
+                LikeUser.append(User.objects.get(id=user))
+            comments = Comment.objects.filter(post_id=post)
+            PostData.append((post, LikeUser, comments.first(), comments.count()))
+
         for result in fromUser.likedBy.all():
             likeList.append(result.id)
 
         return render(request, "network/profile.html", {
             "user": toUser,
-            "posts": posts,
+            "posts": PostData,
             "likes": likeList,
             "following": following,
-            "followerCount": followerCount,
-            "followingCount": followingCount,
             "mutualFollowerCount": mutualFollowerCount
         })
     else:

@@ -141,7 +141,12 @@
                                 {% endif %}
                                 <!-- <a href="#!" class="text-danger mr-2"><span><i class="fa fa-heart"></i></span></a> 
                                 <a href="#!" class="text-dark mr-2"><span>Comment</span></a> -->
-                                <p class="mb-0">Liked by <a href="#" onclick="GetLikes('{{ post.id }}')" class="text-muted font-weight-bold" data-toggle="modal" data-target="#exampleModalCenter"><span id="likeCount-{{post.id}}">{{ post.likes}}</span> people</a></p>
+                                <p class="mb-0">Liked by 
+                                    {% if post.likes != 0 %}
+                                        <a href="#" onclick="GetLikes('{{ post.id }}')" class="text-muted font-weight-bold" data-toggle="modal" data-target="#exampleModalCenter"><span id="likeCount-{{post.id}}">{{ post.likes}}</span> people</a></p>
+                                    {% else %}
+                                        <span class="text-muted font-weight-bold" id="likeCount-{{post.id}}">{{ post.likes}}</span> people
+                                    {% endif %}
                             </div>
                         </div>
                     </div>
@@ -188,29 +193,7 @@
         
         </div>
     </div>
-
-    <div id="exampleModalCenter" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div id="complete-modal" class="modal-dialog modal-dialog-centered modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-                <h5 id="modal-title" class="modal-title" id="exampleModalLongTitle"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="container">
-                  <div class="row">
-                      <div class="col-sm">
-                          <div id="modal-body" style="height: auto; max-height: 400px; overflow: auto">
-  
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-        </div>
-      </div>
-
+    
     <div class="pagination justify-content-center">
         <nav aria-label="...">
             <ul class="pagination">
