@@ -69,7 +69,7 @@ function CreateNewComment(NewCommentForm, post_id){
 
 // Get a list of mutual followers between main user and the touser
 function GetMutual(ToUserID){
-    fetch(`http://localhost:8000/u/${ToUserID}/Mutual`,{
+    fetch(`/u/${ToUserID}/Mutual`,{
         "method": 'GET'
     })
     .then(response => response.json())

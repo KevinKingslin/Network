@@ -26,7 +26,6 @@ def Recommend(fromUser):
         # Add a score for candidates in the user search history
         if user in history:
             score += 0.4
-        print(user, influence[user], likes[user], mutual[user], score)
         user = User.objects.get(id=user)
         ReccomendList[user] = score
     
