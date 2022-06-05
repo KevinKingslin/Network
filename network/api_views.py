@@ -8,7 +8,6 @@ from network.serializers.serializer import LikeSerializer, UserSerializer, Comme
 
 # API view to create new post
 @csrf_exempt
-@login_required(login_url="login")
 def createPost(request):
     if request.method == "POST":
         creator = request.user

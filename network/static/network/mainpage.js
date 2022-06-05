@@ -133,7 +133,7 @@ function CreateNewPost(form){
     formData.append('image', input.files[0])
     formData.append('description', description)
 
-    fetch('createPost',{
+    fetch('/createPost',{
         "method": 'POST',
         "body": formData
     })
@@ -143,7 +143,7 @@ function CreateNewPost(form){
 function SearchUser(){
     event.preventDefault()
     query = document.querySelector('#search-bar').value
-    fetch(`searchuser/${query}`,{
+    fetch(`/searchuser/${query}`,{
         "method": 'GET'
     })
     .then(response => response.json())
