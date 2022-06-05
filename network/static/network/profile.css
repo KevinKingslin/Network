@@ -1,0 +1,27 @@
+.profilePicture {
+    border-radius: 50%; 
+    width: 120px; 
+    height: 120px;
+}
+
+.profileHeader {
+    margin-right: auto; 
+    margin-left: auto; 
+    text-align: center;
+    width: max-content;
+}
+
+#profileUsername {
+    text-align: center; 
+    font-size: 36px;
+    height: max-content;
+}
+
+.profileFollowers {
+    margin-right: 40px; 
+    font-size: 18px;
+}
+
+.profileFollowing {
+    font-size: 18px;
+}

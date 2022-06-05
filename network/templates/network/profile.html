@@ -2,7 +2,9 @@
 {% load getdictvalue %}
 
 {% block body %}
+    <!--Profile header -->
     <div class="profileHeader">
+        <!-- Profile image -->
         <div style="display: inline;">
             {% if user.profilePicture %}
                 <img src="{{ user.profilePicture.url }}" class="img-responsive profilePicture"\>
@@ -11,6 +13,7 @@
             {% endif %}
         </div>
 
+        <!-- Profile username -->
         <div id="profileUsername" style="display: inline;">{{ user.username }}
 
             {% if request.user.id != user.id %}
@@ -20,17 +23,20 @@
                     <button onclick="toggleFollow(this, '{{ user.id }}')" class="btn btn-primary" data-follow="true">Unfollow</button>
                 {% endif %}
             {% endif %}
+            <!-- Profile followers and following  -->
             <p>
                 <span class="profileFollowers"><a href="#" class="text-dark" onclick="GetFollowers('{{ user.id }}')" data-toggle="modal" data-target="#exampleModalCenter">Followers: {{ user.followerCount }}</a></span>
                 <span class="profileFollowers"><a href="#" class="text-dark" onclick="GetFollowing('{{ user.id }}')" data-toggle="modal" data-target="#exampleModalCenter">Following: {{ user.followingCount }}</a></span>
             </p> 
         </div>
+        <!-- Profile mutual followers -->
         {% if request.user.id != user.id %}
             <p class="profileFollowers">Followed by <a href="#" class="text-dark" onclick="GetMutual('{{ user.id }}')" data-toggle="modal" data-target="#exampleModalCenter">{{ mutualFollowerCount }} people</a> you follow</p>
         {% endif %}
-
     </div>
     <hr>
+
+    <!-- Post column -->
     <div class="container" style="display: flex;justify-content: center">
         <div>
             <div class="row">
@@ -39,6 +45,7 @@
         {% for post, likes, comment, CommentCount in posts %}
                 <div class="post-block">
                     <div class="d-flex justify-content-between">
+                        <!-- Post header -->
                         <div class="d-flex mb-3">
                             <div class="mr-2">
                                 <a href="{% url 'profile' post.creator.id %}" class="text-dark"><img draggable="false" src="{{ post.creator.profilePicture.url }}" alt="User" class="author-img"></a>
@@ -48,6 +55,8 @@
                                 <p class="mb-0 text-muted">{{ post.timestamp|timestamp }}</p>
                             </div>
                         </div>
+
+                        <!-- Post user options -->
                         <div class="post-block__user-options">
                             <a href="#!" id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
@@ -58,10 +67,14 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Post image -->
                     <div class="post-block__content mb-2">
                         <p>{{ post.description }}</p>
                         <img draggable="false" src="{{ post.image.url }}" loading="lazy" alt="Content img" />
                     </div>
+
+                    <!-- Post description and likes -->
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-2">
                             <div class="d-flex">
@@ -86,6 +99,8 @@
                         </div>
                     </div>
                     <hr>
+
+                    <!-- Comment section -->
                     <div class="post-block__comments">
                         <!-- Comment Input -->
                         <div class="input-group mb-3">
@@ -95,11 +110,6 @@
                                     <button class="btn btn-primary" type="submit" id="button-addon2"><i class="fa fa-paper-plane"></i></button>
                                 </div>
                             </form>
-
-                                <!-- <form onsubmit="editPost(this, '{{ post.id }}')" id="editForm">
-                                    <textarea id="editArea" style="display: none;">{{ post.description }}</textarea>
-                                    <button id='editSave' style="display: none;" class="btn btn-primary" type="submit">Save and Close</button>
-                                </form> -->
                         </div>
                         <!-- Comment content -->
                         {% if comment %}

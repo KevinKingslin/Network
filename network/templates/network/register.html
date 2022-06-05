@@ -15,55 +15,62 @@
       
                       <form action="{% url 'register' %}" method="post" class="mx-1 mx-md-4">
                         {% csrf_token %}
-      
+                        
+                        <!-- Username field -->
                         <div class="d-flex flex-row align-items-center mb-4">
-                        <i class="fa-solid fa-user-large"></i>
+                          <i class="fa-solid fa-user-large"></i>
                           <div class="form-outline flex-fill mb-0">
                             <input type="text" id="form3Example1c" autofocus name="username" placeholder="Your Username" class="form-control" />
                           </div>
                         </div>
-      
+                        
+                        <!-- Email field -->
                         <div class="d-flex flex-row align-items-center mb-4">
-                        <i class="fa-solid fa-envelope"></i>
+                          <i class="fa-solid fa-envelope"></i>
                           <div class="form-outline flex-fill mb-0">
                             <input type="email" id="form3Example3c" name="email" placeholder="Your Email" class="form-control" />
                           </div>
                         </div>
-      
+                        
+                        <!-- Password field -->
                         <div class="d-flex flex-row align-items-center mb-4">
-                        <i class="fa-solid fa-lock"></i>
+                          <i class="fa-solid fa-lock"></i>
                           <div class="form-outline flex-fill mb-0">
                             <input type="password" id="form3Example4c" name="password" placeholder="Password" class="form-control" />
                           </div>
                         </div>
       
+                        <!-- Confirm password field -->
                         <div class="d-flex flex-row align-items-center mb-4">
-                        <i class="fa-solid fa-key"></i>
+                          <i class="fa-solid fa-key"></i>
                           <div class="form-outline flex-fill mb-0">
                             <input type="password" id="form3Example4cd" name="confirmation" placeholder="Repeat your password" class="form-control" />
                           </div>
                         </div>
 
+                        <!-- Register button -->
                         <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                           <button type="submit" class="btn btn-primary btn-lg">Register</button>
                         </div>
       
                       </form>
 
+                      <!-- Login link -->
                       <div class="form-check d-flex justify-content-center mb-5">
                         <label class="form-check-label" for="form2Example3">
                             Already have an account? <a href="{% url 'login' %}">Log In here.</a>
                         </label>
-                    </div>
+                      </div>
       
                     </div>
+
+                    <!-- Register image -->
                     <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
       
                       <img src="{% static 'network/login.webp' %}" class="img-fluid" alt="Register image">
       
                     </div>
 
-                    
                   </div>
                 </div>
               </div>

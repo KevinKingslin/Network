@@ -8,64 +8,6 @@
     padding-right: 30px;
 }
 
-.newPostFormContainer {
-    border: solid 1px;
-    width: 40vw; 
-    margin-left: auto; 
-    margin-right: auto; 
-    margin-top:vh; 
-    margin-bottom: 2vh; 
-    border-radius: 1%;
-    display: flexbox; 
-    padding: 5px;
-}
-
-.profilePicture {
-    border-radius: 50%; 
-    width: 120px; 
-    height: 120px;
-}
-
-.postImage{
-    display: inline-block;
-    width: 100%; 
-    height: 100%;
-}
-
-.postDescription {
-    padding-left: 10px; 
-    padding-right: 10px;
-    font-size: 18px;
-}
-
-#editArea {
-    display: none; 
-    height: 50px;
-    width: 90%;
-}
-
-.profileHeader {
-    margin-right: auto; 
-    margin-left: auto; 
-    text-align: center;
-    width: max-content;
-}
-
-#profileUsername {
-    text-align: center; 
-    font-size: 36px;
-    height: max-content;
-}
-
-.profileFollowers {
-    margin-right: 40px; 
-    font-size: 18px;
-}
-
-.profileFollowing {
-    font-size: 18px;
-}
-
 button {
     outline: none;
 }
@@ -75,23 +17,8 @@ button {
     width: 100%;
 }
 
-#sidebar {
-    width: 210px;
-    position: fixed;
-    height: 100vh;
-    z-index:100;
-    background:#0a66c2;
-    color: #fff;
-}
-
 #username{
     padding:8px 16px;
-}
-
-#editArea{
-    display:none; 
-    height: 50px;
-    width: 95%;
 }
 
 main .form-control
@@ -110,8 +37,6 @@ main img
 {
     max-width: 100%;
 }
-
-
 
 .field-container {
     position: relative;
@@ -161,4 +86,23 @@ main img
 .modal-image {
     float: left; 
     margin-right: 20px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+@media (max-width:600px){
+    #ymk {
+        position: unset;
+        margin-top: 90px;
+    }
+
+    #posts {
+        margin-left: 0px;
+    }
+
+    #UserOptions {
+        visibility: hidden;
+    }
 }

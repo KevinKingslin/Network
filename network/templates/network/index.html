@@ -2,198 +2,124 @@
 {% load getdictvalue %}
 
 {% block body %}
-<style>
-
-    .sidenav {
-        width: 200px;
-        position: fixed;
-        display: flexbox;
-        z-index: 1;
-        top: 70px;
-        left: 250px;
-        overflow-x: hidden;
-        padding: 8px 0;
-        border-radius: 10%;
-    }
-
-    .sidenav a{
-        font-size: 20px;
-        color: black;
-    }
-
-    input[type="file"] {
-        display: none;
-    }
-    
-    .newPost {
-        border: 1px solid #ccc;
-        display: inline-block;
-        border: none;
-        padding: 6px 12px;
-        cursor: pointer;
-        padding: 0;
-    }
-
-    .newPostFormDesc {
-        margin-left: 10px;
-        width: 100%;
-        height: 40px;
-    }
-
-    @media (max-width:600px){
-        #ymk {
-            position: unset;
-            margin-top: 90px;
-        }
-
-        #posts {
-            margin-left: 0px;
-        }
-
-        #UserOptions {
-            visibility: hidden;
-        }
-    }
-</style>
+<!--Post Column -->
     <div class="container" style="display: flex;justify-content: center">
         <div>
-            <!-- <div class="newPostFormContainer">
-                <form method="POST" action="{% url 'createPost' %}" enctype="multipart/form-data" style="display: flex; padding-top: 2px;">
-                    {% csrf_token %}
-                    <label for="newPostFormImage" class="newPost">
-                        <div>
-                            <img src="/static/network/svg/card-image.svg" style="width: 40px; margin-left: 15px; margin-right: 20px;" />
-                            {{ newpostform.image }}
-                        </div>
-                    </label>
-                    <div style="margin-right: 40px;">
-                        {{ newpostform.description }}
-                    </div>
-                    <div>
-                        <button class="btn btn-primary" type="submit">Post</button>
-                    </div>
-                </form>
-            </div> -->
-            
-
-            
-            <!--Post Template -->
-        
-        <div class="row">
-            <div id="ymk" class="col-sm-3">
-                <div class="post-block">
-                    <h5 style="font: 30px; text-align: center;">You may know</h5>
-                    <hr>
+            <div class="row">
+                <div id="ymk" class="col-sm-3">
+                    <div class="post-block">
+                        <h5 style="font: 30px; text-align: center;">You may know</h5>
+                        <hr>
                     {% if RecommendListCount != 0 %}
                     {% for user in RecommendList %}
-                    <div>
-                        <a href="{% url 'profile' user.id %}"><img draggable="false" src="{{ user.profilePicture.url }}" alt="profile picture" class="author-img" style="float: left; margin-right: 20px;"></a>
-                        <div style="margin-left: 70px;">
-                            <p class="mb-0"><a href="{% url 'profile' user.id %}" class="text-dark">{{ user.username }}</a></p>
-                            <p>Followed by <a href="#" class="text-dark" onclick="GetMutual('{{ user.id }}')" data-toggle="modal" data-target="#exampleModalCenter">{{ MutualList|get_value:user }} people</a></p>
+                        <div>
+                            <a href="{% url 'profile' user.id %}"><img draggable="false" src="{{ user.profilePicture.url }}" alt="profile picture" class="author-img" style="float: left; margin-right: 20px;"></a>
+                            <div style="margin-left: 70px;">
+                                <p class="mb-0"><a href="{% url 'profile' user.id %}" class="text-dark">{{ user.username }}</a></p>
+                                <p>Followed by <a href="#" class="text-dark" onclick="GetMutual('{{ user.id }}')" data-toggle="modal" data-target="#exampleModalCenter">{{ MutualList|get_value:user }} people</a></p>
+                            </div>
+                            <hr>
                         </div>
-                        <hr>
-                    </div>
                     {% endfor %}
                     {% endif %}
+                    </div>
                 </div>
-            </div>
-            
-            <div id="posts" class="col-sm-6">
+                
+                <div id="posts" class="col-sm-6">
             {% if postCount != 0 %}
-        {% for post, likes, comment, CommentCount in posts %}
-                <div class="post-block">
-                    <div class="d-flex justify-content-between">
-                        <div class="d-flex mb-3">
-                            <div class="mr-2">
-                                <a href="{% url 'profile' post.creator.id %}" class="text-dark"><img draggable="false" src="{{ post.creator.profilePicture.url }}" alt="User" class="author-img"></a>
-                            </div>
-                            <div>
-                                <h5 class="mb-0"><a href="{% url 'profile' post.creator.id %}" class="text-dark">{{ post.creator }}</a></h5>
-                                <p class="mb-0 text-muted">{{ post.timestamp|timestamp }}</p>
-                            </div>
-                        </div>
-                        <div class="post-block__user-options">
-                            <a href="#!" id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId">
-                                <a class="dropdown-item text-dark" href="#!"><i class="fa-light fa-pencil mr-1"></i>Edit</a>
-                                <a class="dropdown-item text-danger" href="#!"><i class="fa-light fa-trash-can mr-1"></i>Delete</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-block__content mb-2">
-                        <p>{{ post.description }}</p>
-                        <img draggable="false" src="{{ post.image.url }}" loading="lazy" alt="Content img" />
-                    </div>
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between mb-2">
-                            <div class="d-flex">
-                                {% if request.user in likes %}
-                                    <button id='{{ post.id }}' onclick=toggleLike(this) class="likeButton" data-like="true">
-                                        <a class="text-dark mr-2"><span><i id="likeIcon-{{post.id}}" class="fa-solid fa-heart fa-xl" style="color: red;"></i></span></a>
-                                    </button>
-                                {% else %}
-                                    <button id='{{ post.id }}' onClick=toggleLike(this) class="likeButton" data-like="false">
-                                        <a class="text-dark mr-2"><span><i id="likeIcon-{{post.id}}" class="fa-regular fa-heart fa-xl" style="color: red;"></i></span></a>
-                                    </button>
-                                {% endif %}
-                                <!-- <a href="#!" class="text-danger mr-2"><span><i class="fa fa-heart"></i></span></a> 
-                                <a href="#!" class="text-dark mr-2"><span>Comment</span></a> -->
-                                <p class="mb-0">Liked by 
-                                    {% if post.likes != 0 %}
-                                        <a href="#" onclick="GetLikes('{{ post.id }}')" class="text-muted font-weight-bold" data-toggle="modal" data-target="#exampleModalCenter"><span id="likeCount-{{post.id}}">{{ post.likes}}</span> people</a></p>
-                                    {% else %}
-                                        <span class="text-muted font-weight-bold" id="likeCount-{{post.id}}">{{ post.likes}}</span> people
-                                    {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="post-block__comments">
-                        <!-- Comment Input -->
-                        <div class="input-group mb-3">
-                            <form onsubmit="CreateNewComment(this, '{{ post.id }}')" class="input-group mb-3">
-                                <input id="NewComment-{{post.id}}" type="text" class="form-control" placeholder="Add your comment">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="submit" id="button-addon2"><i class="fa fa-paper-plane"></i></button>
+            {% for post, likes, comment, CommentCount in posts %}
+                    <div class="post-block">
+                        <div class="d-flex justify-content-between">
+                            <!-- Post header -->
+                            <div class="d-flex mb-3">
+                                <div class="mr-2">
+                                    <a href="{% url 'profile' post.creator.id %}" class="text-dark"><img draggable="false" src="{{ post.creator.profilePicture.url }}" alt="User" class="author-img"></a>
                                 </div>
-                            </form>
-
-                                <!-- <form onsubmit="editPost(this, '{{ post.id }}')" id="editForm">
-                                    <textarea id="editArea" style="display: none;">{{ post.description }}</textarea>
-                                    <button id='editSave' style="display: none;" class="btn btn-primary" type="submit">Save and Close</button>
-                                </form> -->
+                                <div>
+                                    <h5 class="mb-0"><a href="{% url 'profile' post.creator.id %}" class="text-dark">{{ post.creator }}</a></h5>
+                                    <p class="mb-0 text-muted">{{ post.timestamp|timestamp }}</p>
+                                </div>
+                            </div>
+                            <!-- Post user options -->
+                            <div class="post-block__user-options">
+                                <a href="#!" id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId">
+                                    <a class="dropdown-item text-dark" href="#!"><i class="fa-light fa-pencil mr-1"></i>Edit</a>
+                                    <a class="dropdown-item text-danger" href="#!"><i class="fa-light fa-trash-can mr-1"></i>Delete</a>
+                                </div>
+                            </div>
                         </div>
-                        <!-- Comment content -->
-                        {% if comment %}
-                            <div class="comment-view-box mb-3">
-                                <div class="d-flex mb-2">
-                                    <a href="{% url 'profile' comment.user_id.id %}"><img draggable="false" src="{{ comment.user_id.profilePicture.url }}" alt="User img" class="author-img author-img--small mr-2"></a>
-                                    <div>
-                                        <h6 class="mb-1"><a href="{% url 'profile' comment.user_id.id %}" class="text-dark">{{ comment.user_id.username }}</a> <small class="text-muted">{{ comment.created }}</small></h6>
-                                        <p class="mb-1">{{ comment.description }}</p>
+
+                        <!-- Post image -->
+                        <div class="post-block__content mb-2">
+                            <p>{{ post.description }}</p>
+                            <img draggable="false" src="{{ post.image.url }}" loading="lazy" alt="Content img" />
+                        </div>
+
+                        <!-- Post description and likes -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div class="d-flex">
+                                    {% if request.user in likes %}
+                                        <button id='{{ post.id }}' onclick=toggleLike(this) class="likeButton" data-like="true">
+                                            <a class="text-dark mr-2"><span><i id="likeIcon-{{post.id}}" class="fa-solid fa-heart fa-xl" style="color: red;"></i></span></a>
+                                        </button>
+                                    {% else %}
+                                        <button id='{{ post.id }}' onClick=toggleLike(this) class="likeButton" data-like="false">
+                                            <a class="text-dark mr-2"><span><i id="likeIcon-{{post.id}}" class="fa-regular fa-heart fa-xl" style="color: red;"></i></span></a>
+                                        </button>
+                                    {% endif %}
+                                    <p class="mb-0">Liked by 
+                                        {% if post.likes != 0 %}
+                                            <a href="#" onclick="GetLikes('{{ post.id }}')" class="text-muted font-weight-bold" data-toggle="modal" data-target="#exampleModalCenter"><span id="likeCount-{{post.id}}">{{ post.likes}}</span> people</a></p>
+                                        {% else %}
+                                            <span class="text-muted font-weight-bold" id="likeCount-{{post.id}}">{{ post.likes}}</span> people
+                                        {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+
+                        <!-- Comment section -->
+                        <div class="post-block__comments">
+                            <!-- Comment Input -->
+                            <div class="input-group mb-3">
+                                <form onsubmit="CreateNewComment(this, '{{ post.id }}')" class="input-group mb-3">
+                                    <input id="NewComment-{{post.id}}" type="text" class="form-control" placeholder="Add your comment">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="submit" id="button-addon2"><i class="fa fa-paper-plane"></i></button>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- Comment content -->
+                            {% if comment %}
+                                <div class="comment-view-box mb-3">
+                                    <div class="d-flex mb-2">
+                                        <a href="{% url 'profile' comment.user_id.id %}"><img draggable="false" src="{{ comment.user_id.profilePicture.url }}" alt="User img" class="author-img author-img--small mr-2"></a>
+                                        <div>
+                                            <h6 class="mb-1"><a href="{% url 'profile' comment.user_id.id %}" class="text-dark">{{ comment.user_id.username }}</a> <small class="text-muted">{{ comment.created }}</small></h6>
+                                            <p class="mb-1">{{ comment.description }}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endif %}
-                        <!-- More Comments -->
-                        {% if CommentCount > 1 %}
-                            <hr>
-                            <a href="#!" onclick="GetComments('{{ post.id }}')" class="text-dark" data-toggle="modal" data-target="#exampleModalCenter">View More comments <span class="font-weight-bold">({{ CommentCount|add:"-1" }})</span></a>
-                        {% endif %}
+                            {% endif %}
+                            <!-- More Comments -->
+                            {% if CommentCount > 1 %}
+                                <hr>
+                                <a href="#!" onclick="GetComments('{{ post.id }}')" class="text-dark" data-toggle="modal" data-target="#exampleModalCenter">View More comments <span class="font-weight-bold">({{ CommentCount|add:"-1" }})</span></a>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
                 {% endfor %}
                 {% endif %}
+                </div>
             </div>
-        </div>
-        
-        
         </div>
     </div>
     
+    <!-- Pagination -->
     <input type="file"/>
     <div class="pagination justify-content-center">
         <nav aria-label="...">

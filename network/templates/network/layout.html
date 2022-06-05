@@ -16,13 +16,18 @@
     <!-- CSS Stylesheets -->
     <link href="{% static 'network/styles.css' %}" rel="stylesheet">
     <link href="{% static 'network/post.css' %}" rel="stylesheet">
+    <link href="{% static 'network/profile.css' %}" rel="stylesheet">
 
+    <!-- JS -->
+    <script src="{% static 'network/modal.js' %}"></script>
     <script src="{% static 'network/mainpage.js' %}"></script>
     
   </head>
   <body>
     <div style="text-align:left">
+      <!-- Navbar -->
       <nav class="navbar-light fixed-top" style="text-align:center;width:100vw;z-index:10; background-color: #fbe399">
+        <!-- Website logo -->
         {% if user.is_authenticated %}
           <a href="{% url 'index' %}" style="text-decoration:none;color:black; float: left; margin-left: 6%;">
             <img draggable="false" id="logo" src="{% static 'network/logo.png' %}" style="width: 200px;">
@@ -33,10 +38,13 @@
           </a>
         {% endif %}
           {% if user.is_authenticated %}
+            <!-- Search bar -->
             <form onsubmit="SearchUser()" style="display: inline;">
               <input id="search-bar" type="text" placeholder="Search..." class="field" />
               <button class="btn btn-primary" type="submit" id="button-addon2" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa-solid fa-magnifying-glass"></i></button>
             </form>
+
+            <!-- User options -->
             <div id="UserOptions" style="display: inline; float: right; margin-right: 30px; margin-bottom: 10px; vertical-align: middle; margin-top: 5px;">
               <div id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: right; cursor: pointer; margin-left: 10px;">
                 <img src="{{ request.user.profilePicture.url }}" style="width: 40px; border-radius: 40px">
@@ -60,6 +68,7 @@
           {% block body %}
           {% endblock %}
 
+          <!-- Modal -->
           <div id="exampleModalCenter" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="height: auto;">
             <div id="complete-modal" class="modal-dialog modal-dialog-centered modal-sm">
               <div class="modal-content">
@@ -84,6 +93,8 @@
 
       </div>
     </div>
+
+    <!-- Bootstrap scripts -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
