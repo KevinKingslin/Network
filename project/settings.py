@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+from lib2to3.pytree import Base
+import django_heroku
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -131,8 +133,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_ROOT = '/static/'
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-                    os.path.join("/home/kevin/Documents/Code", 'static'),
-)
+STATICFILES_DIRS = [
+                    os.path.join(BASE_DIR, 'network/static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+django_heroku.settings(locals())
