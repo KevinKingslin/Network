@@ -80,7 +80,7 @@ function GetMutual(ToUserID){
 
 // Get all users who have liked a post
 function GetLikes(PostID){
-    fetch(`http://localhost:8000/posts/likes/${PostID}`,{
+    fetch(`/posts/likes/${PostID}`,{
         "method": 'GET'
     })
     .then(response => response.json())
@@ -91,7 +91,7 @@ function GetLikes(PostID){
 
 // Get all comments made on a post
 function GetComments(PostID){
-    fetch(`http://localhost:8000/posts/comments/${PostID}`,{
+    fetch(`/posts/comments/${PostID}`,{
         "method": 'GET'
     })
     .then(response => response.json())
