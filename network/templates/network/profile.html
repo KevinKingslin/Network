@@ -20,8 +20,7 @@
 
   <!-- Profile username -->
   <div id="profileUsername" style="display: inline">
-    {{ user.username }} {% if request.user.id != user.id %} {% if following ==
-    False %}
+    {{ user.username }} {% if request.user.id != user.id %} {% if following == False %}
     <button
       onclick="toggleFollow(this, '{{ user.id }}')"
       class="btn btn-primary"
@@ -85,8 +84,7 @@
   <div>
     <div class="row">
       <div class="col-sm-6 offset-sm-3">
-        {% if postCount != 0 %} {% for post, likes, comment, CommentCount in
-        posts %}
+        {% if postCount != 0 %} {% for post, likes, comment, CommentCount in posts %}
         <div class="post-block">
           <div class="d-flex justify-content-between">
             <!-- Post header -->
