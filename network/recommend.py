@@ -28,15 +28,17 @@ def Recommend(fromUser):
             score += 0.4
         user = User.objects.get(id=user)
         ReccomendList[user] = score
-    
+
     ReccomendList = sorted(ReccomendList, key=ReccomendList.get, reverse=True)
     return ReccomendList[0:4]
+
 
 # Add candidates who the main user searched for
 def RankSearchHistory(fromUser):
     serializer = UserSerializer()
     history = serializer.get_history(fromUser)
-    return history    
+    return history
+
 
 # Generate a score for each candidate based on influence
 def RankInfluence(fromUser, SecondOrder, FirstOrderFollowing, AllEdges):
@@ -50,6 +52,7 @@ def RankInfluence(fromUser, SecondOrder, FirstOrderFollowing, AllEdges):
             RecommendList[node] += 1 / user.followingCount
 
     return RecommendList
+
 
 # Generate a score for each candidate based on the number of posts
 # where both the candidate and the main user have liked
@@ -75,7 +78,7 @@ def RankCommonLikes(fromUser, Candidates):
 
 # Generate a score for each candidate based on mutual followers only
 def RankMutualFollowers(Candidates, FirstOrderFollowing, AllEdges):
-    
+
     # Generate a digraph
     G = nx.DiGraph()
     G.add_nodes_from(FirstOrderFollowing)
@@ -89,6 +92,7 @@ def RankMutualFollowers(Candidates, FirstOrderFollowing, AllEdges):
         RecommendList[node] = G.in_degree(node) * 0.6
 
     return RecommendList
+
 
 # Generate candidates which are second order neighbours and not yet
 # followed by the user

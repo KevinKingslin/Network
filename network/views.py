@@ -26,7 +26,9 @@ def index(request):
     # Get posts from users followed by the main user
     PostData = []
     if len(FollowingList) != 0:
-        posts = list(Post.objects.filter(creator__in=FollowingList).order_by('-timestamp'))
+        posts = list(
+            Post.objects.filter(creator__in=FollowingList).order_by("-timestamp")
+        )
         posts = random.sample(posts, len(posts))
     # If main user does not follow any user, return posts from any user
     else:
@@ -41,10 +43,10 @@ def index(request):
             LikeUser.append(User.objects.get(id=user))
         comments = Comment.objects.filter(post_id=post)
         PostData.append((post, LikeUser, comments.first(), comments.count()))
-    
+
     # Initialise paginator class for pagination
     paginator = Paginator(PostData, 10)
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
     # Get a list of recommendations for the main user
@@ -55,24 +57,32 @@ def index(request):
     for user in RecommendList:
         MutualList[user] = MutualFollowerCount(FromUser, user)
 
-    return render(request, "network/index.html", {
-        "posts": page_obj,
-        "postCount": len(posts),
-        "RecommendList": RecommendList,
-        "RecommendListCount": len(RecommendList),
-        "MutualList": MutualList,
-    })
+    return render(
+        request,
+        "network/index.html",
+        {
+            "posts": page_obj,
+            "postCount": len(posts),
+            "RecommendList": RecommendList,
+            "RecommendListCount": len(RecommendList),
+            "MutualList": MutualList,
+        },
+    )
+
 
 # Return number of mutual followers between 2 given users
 def MutualFollowerCount(FromUser, user_id):
     Count = 0
     for record in FromUser.following.all():
         try:
-            UserFollowing.objects.get(user_id=record.following_user_id, following_user_id=user_id)
+            UserFollowing.objects.get(
+                user_id=record.following_user_id, following_user_id=user_id
+            )
             Count += 1
         except ObjectDoesNotExist:
             pass
     return Count
+
 
 # View for profile page
 @login_required(login_url="login")
@@ -83,7 +93,7 @@ def profile(request, user_id):
 
         # Get the user object the main user is visiting
         toUser = User.objects.get(id=user_id)
-        
+
         # Initialise serializers
         serializer = UserSerializer()
         likeserializer = LikeSerializer()
@@ -95,7 +105,9 @@ def profile(request, user_id):
         # Add the touser to the main users' search history
         if fromUser.id != toUser.id:
             try:
-                history = SearchHistory.objects.get(user_id=fromUser, searched_user=toUser)
+                history = SearchHistory.objects.get(
+                    user_id=fromUser, searched_user=toUser
+                )
                 history.created = datetime.now()
             except ObjectDoesNotExist:
                 SearchHistory.objects.create(user_id=fromUser, searched_user=toUser)
@@ -104,15 +116,15 @@ def profile(request, user_id):
         try:
             UserFollowing.objects.get(user_id=fromUser, following_user_id=toUser)
             following = True
-        except ObjectDoesNotExist: 
+        except ObjectDoesNotExist:
             following = False
 
         # Get number of mutual followers between main user and the touser
         mutualFollowerCount = MutualFollowerCount(fromUser, toUser)
-        
+
         # Get all posts of touser order by new
         PostData = []
-        posts = Post.objects.filter(creator = toUser).order_by('-timestamp')
+        posts = Post.objects.filter(creator=toUser).order_by("-timestamp")
         for post in posts:
             LikeUser = []
             likes = likeserializer.get_likes(post)
@@ -121,14 +133,19 @@ def profile(request, user_id):
             comments = Comment.objects.filter(post_id=post)
             PostData.append((post, LikeUser, comments.first(), comments.count()))
 
-        return render(request, "network/profile.html", {
-            "user": toUser,
-            "posts": PostData,
-            "following": following,
-            "mutualFollowerCount": mutualFollowerCount
-        })
+        return render(
+            request,
+            "network/profile.html",
+            {
+                "user": toUser,
+                "posts": PostData,
+                "following": following,
+                "mutualFollowerCount": mutualFollowerCount,
+            },
+        )
     else:
-        return HttpResponse('404')
+        return HttpResponse("404")
+
 
 # View for login page
 def login_view(request):
@@ -145,16 +162,20 @@ def login_view(request):
             return HttpResponseRedirect(reverse("index"))
         else:
             # Return error message
-            return render(request, "network/login.html", {
-                "message": "Invalid username and/or password."
-            })
+            return render(
+                request,
+                "network/login.html",
+                {"message": "Invalid username and/or password."},
+            )
     else:
         return render(request, "network/login.html")
+
 
 # View for logout
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("login"))
+
 
 # View for register page
 def register(request):
@@ -167,18 +188,18 @@ def register(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return render(request, "network/register.html", {
-                "message": "Passwords must match."
-            })
+            return render(
+                request, "network/register.html", {"message": "Passwords must match."}
+            )
 
         # Create new user
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
-            return render(request, "network/register.html", {
-                "message": "Username already taken."
-            })
+            return render(
+                request, "network/register.html", {"message": "Username already taken."}
+            )
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:

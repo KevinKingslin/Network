@@ -1,108 +1,105 @@
 .body {
-    margin: auto;
-    background-color: #f1eee9;
-    font-family: "Roboto", sans-serif;
-    width: 100%; 
-    padding-top: 70px; 
-    padding-left: 30px; 
-    padding-right: 30px;
+  margin: auto;
+  background-color: #f1eee9;
+  font-family: "Roboto", sans-serif;
+  width: 100%;
+  padding-top: 70px;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
 button {
-    outline: none;
+  outline: none;
 }
 
 .wrapper {
-    display: flex;
-    width: 100%;
+  display: flex;
+  width: 100%;
 }
 
-#username{
-    padding:8px 16px;
+#username {
+  padding: 8px 16px;
 }
 
-main .form-control
-{
-    display: inline-block;
-    width: auto;
+main .form-control {
+  display: inline-block;
+  width: auto;
 }
 
-main
-{
-    overflow-x: auto;
-    text-align: center;
+main {
+  overflow-x: auto;
+  text-align: center;
 }
 
-main img
-{
-    max-width: 100%;
+main img {
+  max-width: 100%;
 }
 
 .field-container {
-    position: relative;
-    padding: 0;
-    margin: 0;
-    border: 0;
-    width: 330px;
-    height: 40px;
+  position: relative;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  width: 330px;
+  height: 40px;
 }
 
 .field {
-    border: 0;
-    width: 400px;
-    height: 100%;
-    margin-top: 8px;
-    padding: 10px 20px;
-    background: white;
-    border-radius: 3px;
-    box-shadow: 0px 8px 15px rgba(75, 72, 72, 0.1);
-    transition: all 0.4s ease;
+  border: 0;
+  width: 400px;
+  height: 100%;
+  margin-top: 8px;
+  padding: 10px 20px;
+  background: white;
+  border-radius: 3px;
+  box-shadow: 0px 8px 15px rgba(75, 72, 72, 0.1);
+  transition: all 0.4s ease;
 }
 .field:focus {
-    outline: none;
-    box-shadow: 0px 9px 20px rgba(75, 72, 72, 0.3);
+  outline: none;
+  box-shadow: 0px 9px 20px rgba(75, 72, 72, 0.3);
 }
 .field:focus + .icons-container .icon-close {
-    opacity: 1;
-    transform: translateX(0);
+  opacity: 1;
+  transform: translateX(0);
 }
 .field:focus + .icons-container .icon-search {
-    opacity: 0;
-    transform: translateX(200%);
+  opacity: 0;
+  transform: translateX(200%);
 }
 
 #ymk {
-    position: fixed;
+  position: fixed;
 }
 
 #posts {
-    margin-left: 35%;
+  margin-left: 35%;
 }
 
 #profile-posts {
-    margin-left: 25%;
+  margin-left: 25%;
 }
 
 .modal-image {
-    float: left; 
-    margin-right: 20px;
+  float: left;
+  margin-right: 20px;
 }
 
 input[type="file"] {
-    display: none;
+  display: none;
 }
 
-@media (max-width:600px){
-    #ymk {
-        position: unset;
-        margin-top: 90px;
-    }
+@media (max-width: 600px) {
+  #ymk {
+    position: unset;
+    margin-top: 90px;
+  }
 
-    #posts {
-        margin-left: 0px;
-    }
+  #posts {
+    margin-left: 0px;
+  }
 
-    #UserOptions {
-        visibility: hidden;
-    }
+  #UserOptions {
+    visibility: hidden;
+  }
 }
